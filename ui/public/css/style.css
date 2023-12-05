@@ -5,6 +5,8 @@ html {
 
 body {
   font-size: 1.6rem;
+  margin: 0;
+  padding: 2rem;
 }
 
 .container {
@@ -13,3 +15,11 @@ body {
   grid-template-columns: 100px 1fr;
 }
 
+input {
+  font: inherit;
+  display: block;
+}
+
+form > div + div {
+  margin-top: 1rem;
+}
