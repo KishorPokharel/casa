@@ -1,18 +1,15 @@
-*,
-*::after,
-*::before {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html {
   font-size: 62.5%;
+  font-family: system-ui, sans-serif;
 }
 
 body {
   font-size: 1.6rem;
-  max-width: 1440px;
-  margin: auto;
-  border: 1px solid red;
 }
+
+.container {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 100px 1fr;
+}
+

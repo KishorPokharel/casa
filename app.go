@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/KishorPokharel/casa/ui"
+	"github.com/julienschmidt/httprouter"
 )
 
 type application struct {
@@ -14,16 +14,19 @@ type application struct {
 	config *config
 }
 
-func (app *application) routes() http.Handler {
-	mux := http.NewServeMux()
+func (app *application) routes() *httprouter.Router {
+	r := httprouter.New()
 
 	// serve static files
-	fs := http.FileServer(http.FS(ui.Files))
-	mux.Handle("/public/", fs)
+	dir := http.Dir("./ui/public/")
+	r.ServeFiles("/public/*filepath", dir)
 
-	mux.HandleFunc("/", handleHome)
+	// routes
+	r.HandlerFunc(http.MethodGet, "/", handleHomePage)
+	r.HandlerFunc(http.MethodGet, "/property", handleNewPropertyPage)
+	r.HandlerFunc(http.MethodPost, "/property", handleNewProperty)
 
-	return mux
+	return r
 }
 
 func (app *application) run() error {
