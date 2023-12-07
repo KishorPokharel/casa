@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
@@ -35,7 +36,7 @@ func (app *application) handleLoginPage(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-const imageDir = "./"
+const imageDir = "./uploads/"
 
 func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20)
@@ -52,20 +53,26 @@ func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request
 	}
 	defer uploadedFile.Close()
 
-	mtype, err := mimetype.DetectReader(uploadedFile)
-	fmt.Println("Extension: ", mtype.Extension())
-	return
+	b, err := io.ReadAll(uploadedFile)
 	if err != nil {
 		app.logger.Error(err.Error())
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		return
 	}
-	name := uuid.NewString()
-	out, err := os.Create(filepath.Join(imageDir, "banner_"+name))
+	mtype := mimetype.Detect(b)
+	allowedExtensions := []string{".jpg", ".jpeg", ".png"}
+	ext := mtype.Extension()
+	if !slices.Contains(allowedExtensions, ext) {
+		app.logger.Warn("invalid image")
+		http.Error(w, "Invalid Image File", http.StatusBadRequest)
+		return
+	}
+	name := fmt.Sprintf("banner_%s%s", uuid.NewString(), ext)
+	out, err := os.Create(filepath.Join(imageDir, name))
 	defer out.Close()
-	_, err = io.Copy(out, uploadedFile)
+	_, err = out.Write(b)
 	if err != nil {
-		app.logger.Error("copy image to uploads", "msg", err.Error())
+		app.logger.Error("failed writing image", "msg", err.Error())
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		return
 	}
