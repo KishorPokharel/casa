@@ -4,7 +4,7 @@
 
 <h2>Create New Property Listing</h2>
 
-<form action="/property">
+<form action="/property" method="post" enctype="multipart/form-data">
   <div>
     <label for="name">Name</label>
     <input id="name" type="text">
@@ -24,6 +24,10 @@
       <option value="land">Land</option>
       <option value="apartment">Apartment</option>
     </select>
+  </div>
+  <div>
+    <label for="thumbnail">Thumbnail</label>
+    <input id="thumbnail" type="file" name="thumbnail">
   </div>
   <div>
     <button type="submit">Create</button>

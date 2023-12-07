@@ -5,6 +5,7 @@ html {
 
 body {
   font-size: 1.6rem;
+  line-height: 1.6;
   margin: 0;
   padding: 2rem;
 }
@@ -15,8 +16,13 @@ body {
   grid-template-columns: 100px 1fr;
 }
 
-input {
+input,
+button,
+select {
   font: inherit;
+}
+
+input {
   display: block;
 }
 

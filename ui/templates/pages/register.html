@@ -1,0 +1,29 @@
+{{ define "title" }}Register{{ end }}
+
+{{ define "main" }}
+
+<h2>Register</h2>
+
+<form action="/register">
+  <div>
+    <label for="name">Name</label>
+    <input id="name" type="text">
+  </div>
+  <div>
+    <label for="email">Email</label>
+    <input id="email" type="email">
+  </div>
+  <div>
+    <label for="password1">Password</label>
+    <input id="password1" type="password">
+  </div>
+  <div>
+    <label for="password2">Confirm Password</label>
+    <input id="password2" type="password">
+  </div>
+  <div>
+    <button type="submit">Register</button>
+  </div>
+</form>
+
+{{ end }}
