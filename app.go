@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log/slog"
 	"net/http"
 	"time"
@@ -14,7 +15,7 @@ type application struct {
 	config *config
 }
 
-func (app *application) routes() *httprouter.Router {
+func (app *application) routes() http.Handler {
 	r := httprouter.New()
 
 	// serve static files
@@ -22,11 +23,15 @@ func (app *application) routes() *httprouter.Router {
 	r.ServeFiles("/public/*filepath", dir)
 
 	// routes
-	r.HandlerFunc(http.MethodGet, "/", handleHomePage)
-	r.HandlerFunc(http.MethodGet, "/property", handleNewPropertyPage)
-	r.HandlerFunc(http.MethodPost, "/property", handleNewProperty)
+	r.HandlerFunc(http.MethodGet, "/", app.handleHomePage)
 
-	return r
+	r.HandlerFunc(http.MethodGet, "/register", app.handleRegisterPage)
+	r.HandlerFunc(http.MethodGet, "/login", app.handleLoginPage)
+
+	r.HandlerFunc(http.MethodGet, "/property", app.handleNewPropertyPage)
+	r.HandlerFunc(http.MethodPost, "/property", app.handleNewProperty)
+
+	return app.requestID(app.logRequest(r))
 }
 
 func (app *application) run() error {
@@ -39,4 +44,17 @@ func (app *application) run() error {
 	}
 	app.logger.Info("server started", "port", app.config.port)
 	return srv.ListenAndServe()
+}
+
+func (app *application) render(w http.ResponseWriter, page string, data any) error {
+	files := []string{
+		"./ui/templates/layout.html",
+		"./ui/templates/partials/header.html",
+		page,
+	}
+	tmpl, err := template.ParseFiles(files...)
+	if err != nil {
+		return fmt.Errorf("parse template files %v", err)
+	}
+	return tmpl.ExecuteTemplate(w, "layout", data)
 }
