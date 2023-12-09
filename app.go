@@ -7,31 +7,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/KishorPokharel/casa/storage"
 )
 
 type application struct {
-	logger *slog.Logger
-	config *config
-}
-
-func (app *application) routes() http.Handler {
-	r := httprouter.New()
-
-	// serve static files
-	dir := http.Dir("./ui/public/")
-	r.ServeFiles("/public/*filepath", dir)
-
-	// routes
-	r.HandlerFunc(http.MethodGet, "/", app.handleHomePage)
-
-	r.HandlerFunc(http.MethodGet, "/register", app.handleRegisterPage)
-	r.HandlerFunc(http.MethodGet, "/login", app.handleLoginPage)
-
-	r.HandlerFunc(http.MethodGet, "/property", app.handleNewPropertyPage)
-	r.HandlerFunc(http.MethodPost, "/property", app.handleNewProperty)
-
-	return app.requestID(app.logRequest(r))
+	logger  *slog.Logger
+	config  *config
+	storage storage.Storage
 }
 
 func (app *application) run() error {
