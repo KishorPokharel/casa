@@ -1,6 +1,6 @@
 module github.com/KishorPokharel/casa
 
-go 1.21.0
+go 1.21.5
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.3
