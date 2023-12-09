@@ -20,22 +20,6 @@ func (app *application) handleHomePage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *application) handleRegisterPage(w http.ResponseWriter, r *http.Request) {
-	page := "./ui/templates/pages/register.html"
-	err := app.render(w, page, nil)
-	if err != nil {
-		app.logger.Error(err.Error())
-	}
-}
-
-func (app *application) handleLoginPage(w http.ResponseWriter, r *http.Request) {
-	page := "./ui/templates/pages/login.html"
-	err := app.render(w, page, nil)
-	if err != nil {
-		app.logger.Error(err.Error())
-	}
-}
-
 const imageDir = "./uploads/"
 
 func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request) {
