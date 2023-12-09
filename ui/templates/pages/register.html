@@ -4,22 +4,22 @@
 
 <h2>Register</h2>
 
-<form action="/register">
+<form action="/register" method="post">
   <div>
-    <label for="name">Name</label>
-    <input id="name" type="text">
+    <label for="username">Username</label>
+    <input id="username" type="text" name="username">
   </div>
   <div>
     <label for="email">Email</label>
-    <input id="email" type="email">
+    <input id="email" type="email" name="email">
   </div>
   <div>
     <label for="password1">Password</label>
-    <input id="password1" type="password">
+    <input id="password1" type="password" name="password">
   </div>
   <div>
     <label for="password2">Confirm Password</label>
-    <input id="password2" type="password">
+    <input id="password2" type="password" name="password2">
   </div>
   <div>
     <button type="submit">Register</button>
