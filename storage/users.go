@@ -1,12 +1,16 @@
 package storage
 
-import "database/sql"
+import (
+	"database/sql"
+	"time"
+)
 
 type User struct {
-	ID       int64
-	Username string
-	Email    string
-	Password password
+	ID        int64
+	Username  string
+	Email     string
+	Password  password
+	CreatedAt time.Time
 }
 
 type password struct {
@@ -14,11 +18,11 @@ type password struct {
 	PlainText string
 }
 
-type UserModel struct {
+type UserStorage struct {
 	DB *sql.DB
 }
 
-func (m *UserModel) Insert(user User) error {
+func (m *UserStorage) Insert(user User) error {
 	query := `
   		insert into users (username, email, password)
   		values ($1, $2, $3) returning (id, username, email)

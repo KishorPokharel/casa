@@ -3,11 +3,11 @@ package storage
 import "database/sql"
 
 type Storage struct {
-	Users UserModel
+	Users UserStorage
 }
 
 func New(db *sql.DB) Storage {
 	return Storage{
-		Users: UserModel{db},
+		Users: UserStorage{db},
 	}
 }
