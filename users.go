@@ -14,19 +14,19 @@ func (app *application) handleRegisterPage(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-type RegisterUserRequest struct {
-	Username string
-	Email    string
-	Password string
-}
-
 func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Request) {
-	u := RegisterUserRequest{
+	var u = struct {
+		Username string
+		Email    string
+		Password string
+	}{
 		Username: r.FormValue("username"),
 		Email:    r.FormValue("email"),
 		Password: r.FormValue("password"),
 	}
+
 	// TODO: validate form
+
 	user := storage.User{
 		Username: u.Username,
 		Email:    u.Email,
