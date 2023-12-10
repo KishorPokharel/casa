@@ -9,7 +9,7 @@ help:
 confirm:
 	@echo -n 'Are you sure? [y/N] ' && read ans && [ $${ans:-N} = y ]
 
-## run/app: run the application
+## run/app: run the application with go
 .PHONY: run/app
 run/app:
 	CASA_DB_DSN=${CASA_DB_DSN} go run ./...
@@ -38,6 +38,11 @@ audit:
 build/app:
 	@echo 'Building app...'
 	go build -ldflags='-s' -o=./bin/casa ./*.go
+
+## build/run: build and run the app
+.PHONY: build/run
+build/run: build/app
+	CASA_DB_DSN=${CASA_DB_DSN} ./bin/casa
 
 ## clean: clean build folder
 .PHONY: clean
