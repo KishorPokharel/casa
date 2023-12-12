@@ -2,7 +2,14 @@ package storage
 
 import (
 	"database/sql"
+	"errors"
 	"time"
+)
+
+var (
+	ErrNoRecord           = errors.New("no record found")
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrDuplicateEmail     = errors.New("duplicate email")
 )
 
 type User struct {
