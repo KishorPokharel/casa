@@ -29,3 +29,7 @@ input {
 form > div + div {
   margin-top: 1rem;
 }
+
+.red {
+  color: red;
+}
