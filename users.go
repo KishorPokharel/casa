@@ -18,11 +18,7 @@ type userRegisterForm struct {
 
 func (app *application) handleRegisterPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/register.html"
-	err := app.render(w, r, http.StatusOK, page, nil)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	app.render(w, r, http.StatusOK, page, nil)
 }
 
 func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Request) {
@@ -88,11 +84,7 @@ type userLoginForm struct {
 
 func (app *application) handleLoginPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/login.html"
-	err := app.render(w, r, http.StatusOK, page, nil)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	app.render(w, r, http.StatusOK, page, nil)
 }
 
 func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {

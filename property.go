@@ -14,11 +14,7 @@ import (
 
 func (app *application) handleHomePage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/home.html"
-	err := app.render(w, r, http.StatusOK, page, nil)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	app.render(w, r, http.StatusOK, page, nil)
 }
 
 const imageDir = "./uploads/"
@@ -66,18 +62,10 @@ func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request
 
 func (app *application) handleNewPropertyPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/property_create.html"
-	err := app.render(w, r, http.StatusOK, page, nil)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	app.render(w, r, http.StatusOK, page, nil)
 }
 
 func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/search.html"
-	err := app.render(w, r, http.StatusOK, page, nil)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	app.render(w, r, http.StatusOK, page, nil)
 }
