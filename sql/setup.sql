@@ -10,6 +10,14 @@ create table if not exists users (
     version integer not null default 1
 );
 
+create table if not exists sessions (
+  token text primary key,
+  data bytea not null,
+  expiry timestamptz not null
+);
+
+create index sessions_expiry_idx on sessions (expiry);
+
 create table if not exists listings (
     id bigserial primary key,
     created_at timestamp(0) with time zone not null default now(),
