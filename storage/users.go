@@ -60,7 +60,7 @@ type UserStorage struct {
 	DB *sql.DB
 }
 
-func (m *UserStorage) Insert(user User) error {
+func (s *UserStorage) Insert(user User) error {
 	query := `
   		insert into users (username, email, password_hash)
   		values ($1, $2, $3) returning id, username, email
@@ -71,7 +71,7 @@ func (m *UserStorage) Insert(user User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.ID, &user.Username, &user.Email)
+	err := s.DB.QueryRowContext(ctx, query, args...).Scan(&user.ID, &user.Username, &user.Email)
 	if err != nil {
 		switch {
 		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
@@ -82,4 +82,34 @@ func (m *UserStorage) Insert(user User) error {
 	}
 
 	return nil
+}
+
+func (s *UserStorage) Authenticate(email, password string) (int64, error) {
+	query := `select id, password_hash
+      from users where email = $1
+    `
+	args := []any{email}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var id int64
+	var hashedPassword []byte
+	err := s.DB.QueryRowContext(ctx, query, args...).Scan(&id, &hashedPassword)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return 0, ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+	return id, nil
 }

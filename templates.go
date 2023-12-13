@@ -7,11 +7,16 @@ import (
 )
 
 type templateData struct {
-	Form any
+	Flash           string
+	Form            any
+	IsAuthenticated bool
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {
-	return templateData{}
+	return templateData{
+		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
+		IsAuthenticated: app.isAuthenticated(r),
+	}
 }
 
 func (app *application) render(w http.ResponseWriter, r *http.Request, status int, page string, data any) {

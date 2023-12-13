@@ -18,7 +18,9 @@ type userRegisterForm struct {
 
 func (app *application) handleRegisterPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/register.html"
-	app.render(w, r, http.StatusOK, page, nil)
+	data := app.newTemplateData(r)
+	data.Form = userRegisterForm{}
+	app.render(w, r, http.StatusOK, page, data)
 }
 
 func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +54,7 @@ func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Reques
 		app.render(w, r, http.StatusUnprocessableEntity, page, data)
 		return
 	}
+
 	// Register new user
 	user := storage.User{
 		Username: form.Username,
@@ -73,6 +76,7 @@ func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Reques
 		app.serverError(w, r, err)
 		return
 	}
+	app.sessionManager.Put(r.Context(), "flash", "User Registered. Please Login.")
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
@@ -84,7 +88,9 @@ type userLoginForm struct {
 
 func (app *application) handleLoginPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/login.html"
-	app.render(w, r, http.StatusOK, page, nil)
+	data := app.newTemplateData(r)
+	data.Form = userLoginForm{}
+	app.render(w, r, http.StatusOK, page, data)
 }
 
 func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -100,6 +106,7 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// Validate Form
 	form.CheckField(validator.NotBlank(form.Email), "email", "This field can not be blank")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "This field must be a valid email address")
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field can not be blank")
 
 	page := "./ui/templates/pages/login.html"
@@ -109,9 +116,39 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 		app.render(w, r, http.StatusUnprocessableEntity, page, data)
 		return
 	}
+
+	// Login
+	id, err := app.storage.Users.Authenticate(form.Email, form.Password)
+	if err != nil {
+		if errors.Is(err, storage.ErrInvalidCredentials) {
+			form.AddNonFieldError("Email or password is incorrect")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	err = app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+	app.sessionManager.Put(r.Context(), "flash", "Login Successful")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *application) handleLogout(w http.ResponseWriter, r *http.Request) {
-	// TODO: logout
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	err := app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	app.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully!")
+
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
