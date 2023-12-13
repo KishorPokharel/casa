@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 
+	"github.com/KishorPokharel/casa/storage"
 	"github.com/KishorPokharel/casa/validator"
 )
 
@@ -45,7 +46,7 @@ func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Reques
 	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "This field must be a valid email address")
 
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field can not be blank")
-	form.CheckField(validator.MaxChars(form.Password, 10), "username", "This field can not be less than 10 chars")
+	form.CheckField(validator.MinChars(form.Password, 10), "password", "This field can not be less than 10 chars")
 	form.CheckField(form.Password == form.ConfirmPassword, "password", "Two passwords do not match")
 
 	page := "./ui/templates/pages/register.html"
@@ -56,6 +57,27 @@ func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	// Register new user
+	user := storage.User{
+		Username: form.Username,
+		Email:    form.Email,
+	}
+	err = user.Password.Set(form.Password)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	if err := app.storage.Users.Insert(user); err != nil {
+		if errors.Is(err, storage.ErrDuplicateEmail) {
+			form.AddFieldError("email", "Email already exists")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusUnprocessableEntity, page, data)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 type userLoginForm struct {
@@ -99,5 +121,5 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) handleLogout(w http.ResponseWriter, r *http.Request) {
 	// TODO: logout
-	fmt.Fprint(w, "Log the user out")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

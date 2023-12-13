@@ -19,7 +19,10 @@ func (app *application) routes() http.Handler {
 	r.HandlerFunc(http.MethodGet, "/register", app.handleRegisterPage)
 	r.HandlerFunc(http.MethodPost, "/register", app.handleUserRegister)
 	r.HandlerFunc(http.MethodGet, "/login", app.handleLoginPage)
+	r.HandlerFunc(http.MethodPost, "/login", app.handleLogin)
+	r.HandlerFunc(http.MethodPost, "/logout", app.handleLogout)
 
+	r.HandlerFunc(http.MethodGet, "/search", app.handleSearchPage)
 	r.HandlerFunc(http.MethodGet, "/property", app.handleNewPropertyPage)
 	r.HandlerFunc(http.MethodPost, "/property", app.handleNewProperty)
 

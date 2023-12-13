@@ -72,3 +72,12 @@ func (app *application) handleNewPropertyPage(w http.ResponseWriter, r *http.Req
 		return
 	}
 }
+
+func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/search.html"
+	err := app.render(w, r, http.StatusOK, page, nil)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+}
