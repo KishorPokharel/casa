@@ -33,3 +33,16 @@ form > div + div {
 .red {
   color: red;
 }
+
+.nav {
+  list-style-type: none;
+  padding: 0;
+}
+
+.logout-link {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -4,14 +4,20 @@
 
 <h2>Register</h2>
 
-<form action="/login">
+<form action="/login" method="post">
   <div>
     <label for="email">Email</label>
-    <input id="email" type="email">
+    <input id="email" type="email" value="{{ .Form.Email }}">
+    {{ with .Form.FieldErrors.email }}
+    <small class="red">{{ . }}</small>
+    {{ end }}
   </div>
   <div>
     <label for="password">Password</label>
-    <input id="password" type="password">
+    <input id="password" type="password" value="{{ .Form.Password }}">
+    {{ with .Form.FieldErrors.password }}
+    <small class="red">{{ . }}</small>
+    {{ end }}
   </div>
   <div>
     <button type="submit">Login</button>

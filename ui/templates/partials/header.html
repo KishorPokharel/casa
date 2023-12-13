@@ -1,16 +1,15 @@
 {{ define "header" }}
 <header>
   <h2>Casa</h2>
-  <ul>
+  <ul class="nav">
     <li><a href="/">Home</a></li>
     <li><a href="/property">New</a></li>
     <li><a href="/search">Search</a></li>
     <li><a href="/login">Login</a></li>
     <li><a href="/register">Register</a></li>
-    <li><a href="/settings">Settings</a></li>
     <li>
       <form action="/logout" method="post">
-        <button>Logout</button>
+        <button class="logout-link">Logout</button>
       </form>
     </li>
   </ul>
