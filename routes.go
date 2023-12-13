@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 )
 
 func (app *application) routes() http.Handler {
@@ -13,18 +14,20 @@ func (app *application) routes() http.Handler {
 	dir := http.Dir("./ui/public/")
 	r.ServeFiles("/public/*filepath", dir)
 
+	dynamic := alice.New(app.sessionManager.LoadAndSave)
 	// routes
-	r.HandlerFunc(http.MethodGet, "/", app.handleHomePage)
+	r.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.handleHomePage))
 
-	r.HandlerFunc(http.MethodGet, "/register", app.handleRegisterPage)
-	r.HandlerFunc(http.MethodPost, "/register", app.handleUserRegister)
-	r.HandlerFunc(http.MethodGet, "/login", app.handleLoginPage)
-	r.HandlerFunc(http.MethodPost, "/login", app.handleLogin)
-	r.HandlerFunc(http.MethodPost, "/logout", app.handleLogout)
+	r.Handler(http.MethodGet, "/register", dynamic.ThenFunc(app.handleRegisterPage))
+	r.Handler(http.MethodPost, "/register", dynamic.ThenFunc(app.handleUserRegister))
+	r.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.handleLoginPage))
+	r.Handler(http.MethodPost, "/login", dynamic.ThenFunc(app.handleLogin))
+	r.Handler(http.MethodPost, "/logout", dynamic.ThenFunc(app.handleLogout))
 
-	r.HandlerFunc(http.MethodGet, "/search", app.handleSearchPage)
-	r.HandlerFunc(http.MethodGet, "/property", app.handleNewPropertyPage)
-	r.HandlerFunc(http.MethodPost, "/property", app.handleNewProperty)
+	r.Handler(http.MethodGet, "/search", dynamic.ThenFunc(app.handleSearchPage))
+	r.Handler(http.MethodGet, "/property", dynamic.ThenFunc(app.handleNewPropertyPage))
+	r.Handler(http.MethodPost, "/property", dynamic.ThenFunc(app.handleNewProperty))
 
-	return app.requestID(app.logRequest(r))
+	standard := alice.New(app.requestID, app.logRequest)
+	return standard.Then(r)
 }

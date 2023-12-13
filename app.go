@@ -7,12 +7,14 @@ import (
 	"time"
 
 	"github.com/KishorPokharel/casa/storage"
+	"github.com/alexedwards/scs/v2"
 )
 
 type application struct {
-	logger  *slog.Logger
-	config  *config
-	storage storage.Storage
+	logger         *slog.Logger
+	config         *config
+	storage        storage.Storage
+	sessionManager *scs.SessionManager
 }
 
 func (app *application) run() error {

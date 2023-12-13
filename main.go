@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/KishorPokharel/casa/storage"
+	"github.com/alexedwards/scs/postgresstore"
+	"github.com/alexedwards/scs/v2"
 	_ "github.com/lib/pq"
 )
 
@@ -24,13 +26,20 @@ func main() {
 		logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 		config: config,
 	}
-
 	db, err := openDB(dsn)
 	if err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(1)
 	}
+
+	// storage
 	app.storage = storage.New(db)
+
+	// session manager
+	sessionManager := scs.New()
+	sessionManager.Store = postgresstore.New(db)
+	sessionManager.Lifetime = 12 * time.Hour
+	app.sessionManager = sessionManager
 
 	if err := app.run(); err != nil {
 		app.logger.Error(err.Error())
