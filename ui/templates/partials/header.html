@@ -3,15 +3,20 @@
   <h2>Casa</h2>
   <ul class="nav">
     <li><a href="/">Home</a></li>
+    {{ if .IsAuthenticated }}
     <li><a href="/property">New</a></li>
+    {{ end }}
     <li><a href="/search">Search</a></li>
-    <li><a href="/login">Login</a></li>
-    <li><a href="/register">Register</a></li>
+    {{ if .IsAuthenticated }}
     <li>
       <form action="/logout" method="post">
         <button class="logout-link">Logout</button>
       </form>
     </li>
+    {{ else }}
+    <li><a href="/login">Login</a></li>
+    <li><a href="/register">Register</a></li>
+    {{ end }}
   </ul>
 </header>
 {{ end }}

@@ -21,14 +21,14 @@
   </div>
   <div>
     <label for="password1">Password</label>
-    <input id="password1" type="password" name="password" value="{{ .Form.Password }}">
+    <input id="password1" type="password" name="password">
     {{ with .Form.FieldErrors.password }}
     <small class="red">{{ . }}</small>
     {{ end }}
   </div>
   <div>
     <label for="password2">Confirm Password</label>
-    <input id="password2" type="password" name="password2" value="{{ .Form.ConfirmPassword }}">
+    <input id="password2" type="password" name="password2">
   </div>
   <div>
     <button type="submit">Register</button>
