@@ -16,22 +16,13 @@ body {
   grid-template-columns: 100px 1fr;
 }
 
-input,
-button,
-select {
-  font: inherit;
-}
-
-input {
-  display: block;
-}
-
-form > div + div {
-  margin-top: 1rem;
-}
-
-.red {
+.red,
+.error {
   color: red;
+}
+
+.flash {
+  color: steelblue;
 }
 
 .nav {
@@ -39,10 +30,3 @@ form > div + div {
   padding: 0;
 }
 
-.logout-link {
-  background-color: transparent;
-  padding: 0;
-  border: none;
-  text-decoration: underline;
-  cursor: pointer;
-}

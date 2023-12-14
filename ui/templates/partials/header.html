@@ -11,7 +11,8 @@
     <li><a href="/profile">Profile</a></li>
     <li>
       <form action="/logout" method="post">
-        <button class="logout-link">Logout</button>
+        <a href="#" onclick="logoutLink.click()">Logout</a>
+        <button hidden id="logoutLink">Logout</button>
       </form>
     </li>
     {{ else }}
