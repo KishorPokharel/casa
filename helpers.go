@@ -26,6 +26,7 @@ func (app *application) clientError(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-func (app *application) notFound(w http.ResponseWriter) {
-	app.clientError(w, http.StatusNotFound)
+func (app *application) notFound(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/notfound.html"
+	app.render(w, r, http.StatusNotFound, page, nil)
 }

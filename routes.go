@@ -10,9 +10,7 @@ import (
 func (app *application) routes() http.Handler {
 	r := httprouter.New()
 
-	r.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		app.notFound(w)
-	})
+	r.NotFound = http.HandlerFunc(app.notFound)
 
 	// serve static files
 	dir := http.Dir("./ui/public/")
