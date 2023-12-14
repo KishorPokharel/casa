@@ -1,0 +1,14 @@
+{{ define "title" }}Profile{{ end }}
+
+{{ define "main" }}
+
+<h2>Profile</h2>
+
+<ul>
+  <li>ID: {{ .User.ID }}</li>
+  <li>Name: {{ .User.Username }}</li>
+  <li>Email: {{ .User.Email }}</li>
+  <li>CreatedAt: {{ .User.CreatedAt }}</li>
+</ul>
+
+{{ end }}
