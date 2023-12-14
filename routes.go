@@ -10,13 +10,13 @@ import (
 func (app *application) routes() http.Handler {
 	r := httprouter.New()
 
-	r.NotFound = http.HandlerFunc(app.notFound)
-
 	// serve static files
 	dir := http.Dir("./ui/public/")
 	r.ServeFiles("/public/*filepath", dir)
 
 	dynamic := alice.New(app.sessionManager.LoadAndSave, app.authenticate)
+
+	r.NotFound = dynamic.ThenFunc(app.notFound)
 
 	r.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.handleHomePage))
 	r.Handler(http.MethodGet, "/register", dynamic.ThenFunc(app.handleRegisterPage))
