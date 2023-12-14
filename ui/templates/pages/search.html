@@ -2,6 +2,11 @@
 
 {{ define "main" }}
 
-<h2>Search Page</h2>
+<h2>Search For Property Here</h2>
+
+<form action="/search" method="get">
+  <input type="text" placeholder="House near Pokhara Gandaki">
+  <button type="submit">Search</button>
+</form>
 
 {{ end }}
