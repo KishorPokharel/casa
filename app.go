@@ -25,6 +25,12 @@ func (app *application) run() error {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	app.logger.Info("server started", "port", app.config.port)
+	app.logger.Info(
+		"server started",
+		slog.Group("config",
+			"port", app.config.port,
+			"debug", app.config.debug,
+		),
+	)
 	return srv.ListenAndServe()
 }
