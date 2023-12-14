@@ -33,6 +33,7 @@ func (app *application) routes() http.Handler {
 	r.Handler(http.MethodGet, "/property", protected.ThenFunc(app.handleNewPropertyPage))
 	r.Handler(http.MethodPost, "/property", protected.ThenFunc(app.handleNewProperty))
 	r.Handler(http.MethodPost, "/logout", protected.ThenFunc(app.handleLogout))
+	r.Handler(http.MethodGet, "/profile", protected.ThenFunc(app.handleProfilePage))
 
 	standard := alice.New(app.requestID, app.logRequest)
 	return standard.Then(r)

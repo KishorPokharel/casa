@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"log/slog"
 	"os"
 	"time"
@@ -14,13 +15,18 @@ import (
 )
 
 type config struct {
-	port int
+	port  int
+	debug bool
 }
 
 func main() {
+	debug := flag.Bool("debug", false, "Enable debug mode")
+	flag.Parse()
+
 	dsn := os.Getenv("CASA_DB_DSN")
 	config := &config{
-		port: 3000,
+		port:  3000,
+		debug: *debug,
 	}
 	app := &application{
 		logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),

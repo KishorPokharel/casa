@@ -135,7 +135,7 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 		return
 	}
-	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+	app.sessionManager.Put(r.Context(), sessionAuthKey, id)
 	app.sessionManager.Put(r.Context(), "flash", "Login Successful")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -147,8 +147,25 @@ func (app *application) handleLogout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	app.sessionManager.Remove(r.Context(), sessionAuthKey)
 	app.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully!")
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+func (app *application) handleProfilePage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/profile.html"
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	data := app.newTemplateData(r)
+	data.User = user
+	app.render(w, r, http.StatusOK, page, data)
 }

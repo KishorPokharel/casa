@@ -114,14 +114,14 @@ func (s *UserStorage) Authenticate(email, password string) (int64, error) {
 	return id, nil
 }
 
-func (s *UserStorage) Exists(id int) (bool, error) {
+func (s *UserStorage) Exists(id int64) (bool, error) {
 	var exists bool
 	query := "select exists(select true from users where id = $1)"
 	err := s.DB.QueryRow(query, id).Scan(&exists)
 	return exists, err
 }
 
-func (s *UserStorage) Get(id int) (User, error) {
+func (s *UserStorage) Get(id int64) (User, error) {
 	query := `select id, username, email, created_at from users where id = $1`
 
 	var user User

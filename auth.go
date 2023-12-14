@@ -28,7 +28,7 @@ func (app *application) requireAuthentication(next http.Handler) http.Handler {
 
 func (app *application) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+		id := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
 		if id == 0 {
 			next.ServeHTTP(w, r)
 			return

@@ -4,17 +4,20 @@ import (
 	"bytes"
 	"html/template"
 	"net/http"
+
+	"github.com/KishorPokharel/casa/storage"
 )
 
 type templateData struct {
 	Flash           string
 	Form            any
 	IsAuthenticated bool
+	User            storage.User
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {
 	return templateData{
-		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
+		Flash:           app.sessionManager.PopString(r.Context(), sessionFlashKey),
 		IsAuthenticated: app.isAuthenticated(r),
 	}
 }
