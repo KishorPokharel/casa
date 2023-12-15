@@ -76,7 +76,7 @@ func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Reques
 		app.serverError(w, r, err)
 		return
 	}
-	app.sessionManager.Put(r.Context(), "flash", "User Registered. Please Login.")
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "User Registered. Please Login.")
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
@@ -136,7 +136,7 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	app.sessionManager.Put(r.Context(), sessionAuthKey, id)
-	app.sessionManager.Put(r.Context(), "flash", "Login Successful")
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Login Successful")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -148,7 +148,7 @@ func (app *application) handleLogout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.sessionManager.Remove(r.Context(), sessionAuthKey)
-	app.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully!")
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "You've been logged out successfully!")
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
