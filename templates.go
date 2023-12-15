@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"html/template"
 	"net/http"
+	"path/filepath"
+	"time"
 
 	"github.com/KishorPokharel/casa/storage"
 )
@@ -13,6 +15,18 @@ type templateData struct {
 	Form            any
 	IsAuthenticated bool
 	User            storage.User
+	Listings        []storage.Property
+}
+
+func humanDate(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.UTC().Format("02 Jan 2006 at 15:04")
+}
+
+var functions = template.FuncMap{
+	"humanDate": humanDate,
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {
@@ -29,7 +43,7 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, status in
 		page,
 	}
 
-	tmpl, err := template.ParseFiles(files...)
+	tmpl, err := template.New(filepath.Base(page)).Funcs(functions).ParseFiles(files...)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
