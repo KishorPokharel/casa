@@ -2,3 +2,4 @@
 bin/
 .envrc
 tmp.txt
+uploads/
