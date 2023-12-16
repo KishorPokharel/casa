@@ -30,3 +30,25 @@
   padding: 0;
 }
 
+.listings {
+  display: flex;
+  gap: 4rem;
+  flex-wrap: wrap;
+}
+
+.listing {
+  flex-basis: 250px;
+  border-radius: calc(1rem - 1px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.listing img {
+  border-radius: 1rem;
+  width: 100%;
+  object-fit: cover;
+}
+
+.listing_body {
+  padding: 2rem;
+}
+
