@@ -21,11 +21,14 @@ func (app *application) routes() http.Handler {
 	r.NotFound = dynamic.ThenFunc(app.notFound)
 
 	r.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.handleHomePage))
-	r.Handler(http.MethodGet, "/register", dynamic.ThenFunc(app.handleRegisterPage))
-	r.Handler(http.MethodPost, "/register", dynamic.ThenFunc(app.handleUserRegister))
-	r.Handler(http.MethodGet, "/login", dynamic.ThenFunc(app.handleLoginPage))
-	r.Handler(http.MethodPost, "/login", dynamic.ThenFunc(app.handleLogin))
 	r.Handler(http.MethodGet, "/search", dynamic.ThenFunc(app.handleSearchPage))
+
+	anonymous := dynamic.Append(app.requireAnonymous)
+
+	r.Handler(http.MethodGet, "/register", anonymous.ThenFunc(app.handleRegisterPage))
+	r.Handler(http.MethodPost, "/register", anonymous.ThenFunc(app.handleUserRegister))
+	r.Handler(http.MethodGet, "/login", anonymous.ThenFunc(app.handleLoginPage))
+	r.Handler(http.MethodPost, "/login", anonymous.ThenFunc(app.handleLogin))
 
 	// protected routes
 	protected := dynamic.Append(app.requireAuthentication)
