@@ -138,8 +138,27 @@ func (app *application) handleNewPropertyPage(w http.ResponseWriter, r *http.Req
 	app.render(w, r, http.StatusOK, page, data)
 }
 
+type queryForm struct {
+	Query string
+}
+
 func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/search.html"
 	data := app.newTemplateData(r)
+	data.Form = queryForm{}
+	query := r.URL.Query().Get("query")
+	if query == "" {
+		app.render(w, r, http.StatusOK, page, data)
+		return
+	}
+	listings, err := app.storage.Property.Search(query)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data.Listings = listings
+	data.Form = queryForm{
+		Query: query,
+	}
 	app.render(w, r, http.StatusOK, page, data)
 }

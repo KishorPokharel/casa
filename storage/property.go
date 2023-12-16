@@ -22,7 +22,7 @@ type PropertyStorage struct {
 
 func (s *PropertyStorage) GetAll() ([]Property, error) {
 	query := `
-        select id, description, banner, location, price, created_at
+        select id, title, description, banner, location, price, created_at
         from listings
     `
 
@@ -37,7 +37,7 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -49,10 +49,10 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 func (s *PropertyStorage) Insert(property Property) error {
 	query := `
       insert into listings
-      (description, banner, location, property_type, price)
+      (title, description, banner, location, property_type, price)
       values ($1, $2, $3, $4, $5)
     `
-	args := []any{property.Description, property.Banner, property.Location, "land", property.Price}
+	args := []any{property.Title, property.Description, property.Banner, property.Location, "land", property.Price}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -62,4 +62,32 @@ func (s *PropertyStorage) Insert(property Property) error {
 		return err
 	}
 	return nil
+}
+
+func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
+	query := `
+        select id, title, description, banner, location, price, created_at
+        from listings
+        where (to_tsvector('simple', location) @@ plainto_tsquery('simple', $1))
+    `
+	args := []any{searchQuery}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	rows, err := s.DB.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	listings := []Property{}
+	for rows.Next() {
+		p := Property{}
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		listings = append(listings, p)
+	}
+	return listings, nil
 }
