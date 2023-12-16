@@ -5,8 +5,22 @@
 <h2>Search For Property Here</h2>
 
 <form action="/search" method="get">
-  <input type="text" placeholder="House near Pokhara Gandaki">
-  <button type="submit">Search</button>
+  <input type="text" name="query" placeholder="Enter a location" value="{{ .Form.Query }}">
+  <!-- <button type="submit">Search</button> -->
 </form>
 
+<div class="listings">
+{{ range .Listings }}
+  <div class="listing listing__{{.ID}}">
+    <img width="500" src="/uploads/{{.Banner}}" alt="">
+    <div class="listing_body">
+      <h3>{{ .Title }}</h3>
+      <h5>{{ .Location }}</h5>
+      <h4>NPR. {{ .Price }}</h4>
+      <!-- <p>{{ .Description }}</p> -->
+      <small>{{ humanDate .CreatedAt }}</small>
+    </div>
+  </div>
+{{ end }}
+</div>
 {{ end }}

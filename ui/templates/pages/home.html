@@ -12,13 +12,13 @@
 
 <div class="listings">
 {{ range .Listings }}
-  <div class=" listing listing__{{.ID}}">
-    <!-- <h3>{{ .Title }}</h3> -->
+  <div class="listing listing__{{.ID}}">
     <img width="500" src="/uploads/{{.Banner}}" alt="">
     <div class="listing_body">
-      <h5>{{ .Location }}</h5>
+      <p>{{ .Title }}</p>
       <h4>NPR. {{ .Price }}</h4>
-      <p>{{ .Description }}</p>
+      <p>{{ .Location }}</p>
+      <!-- <p>{{ .Description }}</p> -->
       <small>{{ humanDate .CreatedAt }}</small>
     </div>
   </div>

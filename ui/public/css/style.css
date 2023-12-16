@@ -38,14 +38,19 @@
 
 .listing {
   flex-basis: 250px;
-  border-radius: calc(1rem - 1px);
+  border-radius: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .listing img {
-  border-radius: 1rem;
+  border-radius: calc(1rem - 1px);
   width: 100%;
   object-fit: cover;
+}
+
+.listing img:hover {
+  transform: scale(1.01);
+  cursor: pointer;
 }
 
 .listing_body {
