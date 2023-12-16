@@ -20,11 +20,17 @@ create index sessions_expiry_idx on sessions (expiry);
 
 create table if not exists listings (
     id bigserial primary key,
-    created_at timestamp(0) with time zone not null default now(),
+    title text not null,
     description text not null,
     banner text not null,
     pictures text[],
     location text not null,
     property_type text not null check (property_type in ('apartment', 'land', 'house')),
-    price int not null
+    price int not null,
+    created_at timestamp(0) with time zone not null default now()
+);
+
+create table if not exists favorites (
+    user_id bigint references users(id),
+    listing_id bigint references listings(id)
 );
