@@ -7,7 +7,13 @@
 {{ with .Listing }}
 <div class="single-listing listing__{{.ID}}">
   <h3>{{ .Title }}</h3>
-  <small style="display: block">{{ humanDate .CreatedAt }}</small>
+  <div class="meta">
+    <small style="display: block">{{ humanDate .CreatedAt }}</small>
+    <a onclick="saveBtn.click()" class="button button-clear" href="#">Save</a>
+    <form action="/save/{{.ID}}" method="post">
+      <button id="saveBtn" hidden type="submit">Save</button>
+    </form>
+  </div>
   <img width="500" src="/uploads/{{.Banner}}" alt="">
   <h4>NPR. {{ .Price }}</h4>
   <p>{{ .Location }}</p>

@@ -32,8 +32,8 @@
 
 .listings {
   display: grid;
-  gap: 4rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
 }
 
 .listing {
@@ -61,3 +61,7 @@
   cursor: pointer;
 }
 
+.meta {
+  display: flex;
+  align-items: center;
+}
