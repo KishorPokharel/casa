@@ -167,12 +167,7 @@ type queryForm struct {
 func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/search.html"
 	data := app.newTemplateData(r)
-	data.Form = queryForm{}
 	query := r.URL.Query().Get("query")
-	if query == "" {
-		app.render(w, r, http.StatusOK, page, data)
-		return
-	}
 	listings, err := app.storage.Property.Search(query)
 	if err != nil {
 		app.serverError(w, r, err)
