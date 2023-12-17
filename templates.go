@@ -31,10 +31,11 @@ var functions = template.FuncMap{
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {
-	return templateData{
+	data := templateData{
 		Flash:           app.sessionManager.PopString(r.Context(), sessionFlashKey),
 		IsAuthenticated: app.isAuthenticated(r),
 	}
+	return data
 }
 
 func (app *application) render(w http.ResponseWriter, r *http.Request, status int, page string, data any) {

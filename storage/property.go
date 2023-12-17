@@ -15,6 +15,7 @@ type Property struct {
 	Title       string
 	Description string
 	Price       int64
+	Username    string
 	CreatedAt   time.Time
 }
 
@@ -24,9 +25,14 @@ type PropertyStorage struct {
 
 func (s *PropertyStorage) GetAll() ([]Property, error) {
 	query := `
-        select id, title, description, banner, location, price, created_at
-        from listings
-        order by created_at desc
+        select 
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.created_at, users.id, users.username
+        from
+            listings
+        join
+            users on listings.user_id = users.id
+        order by listings.created_at desc
     `
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -40,7 +46,7 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
 		if err != nil {
 			return nil, err
 		}
@@ -69,9 +75,16 @@ func (s *PropertyStorage) Insert(property Property) error {
 
 func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 	query := `
-        select id, title, description, banner, location, price, created_at
-        from listings
-        where (to_tsvector('simple', location) @@ plainto_tsquery('simple', $1) or $1='')
+        select
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.created_at, users.id, users.username
+        from
+            listings
+        join
+            users on listings.user_id = users.id
+        where
+            (to_tsvector('simple', location) @@ plainto_tsquery('simple', $1) or $1='')
+        order by listings.created_at desc
     `
 	args := []any{searchQuery}
 
@@ -86,7 +99,7 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
 		if err != nil {
 			return nil, err
 		}
@@ -97,9 +110,14 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 
 func (s *PropertyStorage) Get(id int64) (Property, error) {
 	query := `
-        select id, title, description, banner, location, price, created_at
-        from listings
-        where id = $1
+        select
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.created_at, users.id, users.username
+        from
+            listings
+        join
+            users on listings.user_id = users.id
+        where listings.id = $1
     `
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -107,7 +125,7 @@ func (s *PropertyStorage) Get(id int64) (Property, error) {
 
 	row := s.DB.QueryRowContext(ctx, query, id)
 	p := Property{}
-	err := row.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt)
+	err := row.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return p, ErrNoRecord

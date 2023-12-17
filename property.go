@@ -159,6 +159,19 @@ func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.R
 	page := "./ui/templates/pages/property_single.html"
 	data := app.newTemplateData(r)
 	data.Listing = p
+	if app.isAuthenticated(r) {
+		userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+		user, err := app.storage.Users.Get(userID)
+		if err != nil {
+			if errors.Is(err, storage.ErrNoRecord) {
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+			} else {
+				app.serverError(w, r, err)
+			}
+			return
+		}
+		data.User = user
+	}
 	app.render(w, r, http.StatusOK, page, data)
 }
 
