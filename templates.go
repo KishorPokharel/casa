@@ -16,6 +16,7 @@ type templateData struct {
 	IsAuthenticated bool
 	User            storage.User
 	Listings        []storage.Property
+	Listing         storage.Property
 }
 
 func humanDate(t time.Time) string {

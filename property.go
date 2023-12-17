@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -135,6 +136,27 @@ func (app *application) handleNewPropertyPage(w http.ResponseWriter, r *http.Req
 	page := "./ui/templates/pages/property_create.html"
 	data := app.newTemplateData(r)
 	data.Form = propertyCreateForm{}
+	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+	p, err := app.storage.Property.Get(id)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	page := "./ui/templates/pages/property_single.html"
+	data := app.newTemplateData(r)
+	data.Listing = p
 	app.render(w, r, http.StatusOK, page, data)
 }
 
