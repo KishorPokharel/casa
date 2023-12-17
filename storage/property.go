@@ -26,6 +26,7 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 	query := `
         select id, title, description, banner, location, price, created_at
         from listings
+        order by created_at desc
     `
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
