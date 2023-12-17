@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -90,4 +91,26 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 		listings = append(listings, p)
 	}
 	return listings, nil
+}
+
+func (s *PropertyStorage) Get(id int64) (Property, error) {
+	query := `
+        select id, title, description, banner, location, price, created_at
+        from listings
+        where id = $1
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	row := s.DB.QueryRowContext(ctx, query, id)
+	p := Property{}
+	err := row.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return p, ErrNoRecord
+		}
+		return p, err
+	}
+	return p, nil
 }
