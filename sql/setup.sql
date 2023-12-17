@@ -20,6 +20,7 @@ create index sessions_expiry_idx on sessions (expiry);
 
 create table if not exists listings (
     id bigserial primary key,
+    user_id bigint references users(id) not null,
     title text not null,
     description text not null,
     banner text not null,
@@ -31,6 +32,6 @@ create table if not exists listings (
 );
 
 create table if not exists favorites (
-    user_id bigint references users(id),
-    listing_id bigint references listings(id)
+    user_id bigint references users(id) not null,
+    listing_id bigint references listings(id) not null
 );
