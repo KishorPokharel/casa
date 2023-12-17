@@ -4,21 +4,21 @@
 
 {{ define "main" }}
 
-{{ with .Listing }}
-<div class="single-listing listing__{{.ID}}">
-  <h3>{{ .Title }}</h3>
+<div class="single-listing listing__{{.Listing.ID}}">
+  <h3>{{ .Listing.Title }}</h3>
   <div class="meta">
-    <small style="display: block">{{ humanDate .CreatedAt }}</small>
+    <small>{{ humanDate .Listing.CreatedAt }} | Posted by <b>{{ .Listing.Username }}</b></small>
+    {{ if ne .User.ID .Listing.UserID }}
     <a onclick="saveBtn.click()" class="button button-clear" href="#">Save</a>
-    <form action="/save/{{.ID}}" method="post">
+    <form action="/save/{{.Listing.ID}}" method="post">
       <button id="saveBtn" hidden type="submit">Save</button>
     </form>
+    {{ end }}
   </div>
-  <img width="500" src="/uploads/{{.Banner}}" alt="">
-  <h4>NPR. {{ .Price }}</h4>
-  <p>{{ .Location }}</p>
-  <p>{{ .Description }}</p>
+  <img width="500" src="/uploads/{{.Listing.Banner}}" alt="">
+  <h4>NPR. {{ .Listing.Price }}</h4>
+  <p>{{ .Listing.Location }}</p>
+  <p>{{ .Listing.Description }}</p>
 </div>
-{{ end }}
 
 {{ end }}
