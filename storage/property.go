@@ -69,7 +69,7 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 	query := `
         select id, title, description, banner, location, price, created_at
         from listings
-        where (to_tsvector('simple', location) @@ plainto_tsquery('simple', $1))
+        where (to_tsvector('simple', location) @@ plainto_tsquery('simple', $1) or $1='')
     `
 	args := []any{searchQuery}
 
