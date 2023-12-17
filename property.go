@@ -45,6 +45,7 @@ type propertyCreateForm struct {
 }
 
 func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request) {
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		app.logger.Error(err.Error())
@@ -122,6 +123,7 @@ func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request
 		Title:       form.Title,
 		Description: form.Description,
 		Price:       form.Price,
+		UserID:      userID,
 	}
 	err = app.storage.Property.Insert(property)
 	if err != nil {

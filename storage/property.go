@@ -9,6 +9,7 @@ import (
 
 type Property struct {
 	ID          int64
+	UserID      int64
 	Banner      string
 	Location    string
 	Title       string
@@ -50,10 +51,10 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 func (s *PropertyStorage) Insert(property Property) error {
 	query := `
       insert into listings
-      (title, description, banner, location, property_type, price)
-      values ($1, $2, $3, $4, $5)
+      (title, user_id, description, banner, location, property_type, price)
+      values ($1, $2, $3, $4, $5, $6, $7)
     `
-	args := []any{property.Title, property.Description, property.Banner, property.Location, "land", property.Price}
+	args := []any{property.Title, property.UserID, property.Description, property.Banner, property.Location, "land", property.Price}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
