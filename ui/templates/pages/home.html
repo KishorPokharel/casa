@@ -13,7 +13,7 @@
 <div class="listings">
 {{ range .Listings }}
   <div class="listing listing__{{.ID}}">
-    <img width="500" src="/uploads/{{.Banner}}" alt="">
+    <img onclick="location.href='/listings/{{.ID}}'" width="500" src="/uploads/{{.Banner}}" alt="">
     <div class="listing_body">
       <p>{{ .Title }}</p>
       <h4>NPR. {{ .Price }}</h4>
