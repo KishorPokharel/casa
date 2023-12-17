@@ -31,13 +31,12 @@
 }
 
 .listings {
-  display: flex;
+  display: grid;
   gap: 4rem;
-  flex-wrap: wrap;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
 }
 
 .listing {
-  flex-basis: 250px;
   border-radius: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }

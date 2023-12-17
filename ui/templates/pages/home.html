@@ -20,10 +20,9 @@
   <div class="listing listing__{{.ID}}">
     <img onclick="location.href='/listings/{{.ID}}'" width="500" src="/uploads/{{.Banner}}" alt="">
     <div class="listing_body">
-      <p onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</p>
+      <h3 onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</h3>
+      <h5>{{ .Location }}</h5>
       <h4>NPR. {{ .Price }}</h4>
-      <p>{{ .Location }}</p>
-      <!-- <p>{{ .Description }}</p> -->
       <small>{{ humanDate .CreatedAt }}</small>
     </div>
   </div>
