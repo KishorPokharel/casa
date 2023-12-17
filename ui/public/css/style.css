@@ -43,17 +43,22 @@
 }
 
 .listing img {
+  transform: scale(1.02);
   border-radius: calc(1rem - 1px);
   width: 100%;
   object-fit: cover;
 }
 
 .listing img:hover {
-  transform: scale(1.01);
+  transform: scale(1.03);
   cursor: pointer;
 }
 
 .listing_body {
-  padding: 2rem;
+  padding: 1rem;
+}
+
+.pointer {
+  cursor: pointer;
 }
 

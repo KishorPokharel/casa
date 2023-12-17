@@ -20,7 +20,7 @@
   <div class="listing listing__{{.ID}}">
     <img onclick="location.href='/listings/{{.ID}}'" width="500" src="/uploads/{{.Banner}}" alt="">
     <div class="listing_body">
-      <p>{{ .Title }}</p>
+      <p onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</p>
       <h4>NPR. {{ .Price }}</h4>
       <p>{{ .Location }}</p>
       <!-- <p>{{ .Description }}</p> -->
