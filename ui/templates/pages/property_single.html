@@ -7,10 +7,10 @@
 <div class="single-listing listing__{{.Listing.ID}}">
   <h3>{{ .Listing.Title }}</h3>
   <div class="meta">
-    <small>{{ humanDate .Listing.CreatedAt }} | Posted by <b>{{ .Listing.Username }}</b></small>
+    <span>{{ humanDate .Listing.CreatedAt }} | Posted by <b>{{ .Listing.Username }}</b></span>
     {{ if ne .User.ID .Listing.UserID }}
-    <a onclick="saveBtn.click()" class="button button-clear" href="#">Save</a>
-    <form action="/save/{{.Listing.ID}}" method="post">
+    <a onclick="saveBtn.click()" class="" href="#">save</a>
+    <form action="/listings/{{.Listing.ID}}/save" method="post">
       <button id="saveBtn" hidden type="submit">Save</button>
     </form>
     {{ end }}
