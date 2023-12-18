@@ -22,6 +22,7 @@ type Property struct {
 	Username    string
 	CreatedAt   time.Time
 	Rank        float64
+	Saved       bool
 }
 
 type PropertyStorage struct {
@@ -177,4 +178,21 @@ func (s *PropertyStorage) Unsave(userID, listingID int64) error {
 		return err
 	}
 	return nil
+}
+
+func (s *PropertyStorage) IsSaved(userID, listingID int64) (bool, error) {
+	query := `
+	  select exists(
+        select true from favorites where user_id = $1 and listing_id = $2
+      )
+    `
+
+	var exists bool
+	args := []any{userID, listingID}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	err := s.DB.QueryRowContext(ctx, query, args...).Scan(&exists)
+	return exists, err
 }
