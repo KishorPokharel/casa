@@ -36,9 +36,11 @@ func (app *application) routes() http.Handler {
 
 	r.Handler(http.MethodGet, "/property", protected.ThenFunc(app.handleNewPropertyPage))
 	r.Handler(http.MethodPost, "/property", protected.ThenFunc(app.handleNewProperty))
-	r.Handler(http.MethodPost, "/logout", protected.ThenFunc(app.handleLogout))
 	r.Handler(http.MethodGet, "/profile", protected.ThenFunc(app.handleProfilePage))
+	r.Handler(http.MethodPost, "/logout", protected.ThenFunc(app.handleLogout))
+	r.Handler(http.MethodPost, "/listings/:id/save", protected.ThenFunc(app.handleSaveListing))
+	r.Handler(http.MethodDelete, "/listings/:id/unsave", protected.ThenFunc(app.handleUnsaveListing))
 
-	standard := alice.New(app.requestID, app.logRequest)
+	standard := alice.New(app.methodOverride, app.requestID, app.logRequest)
 	return standard.Then(r)
 }

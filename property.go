@@ -171,6 +171,16 @@ func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.R
 			return
 		}
 		data.User = user
+		// check if the post is saved
+		// if yes set Listing.Saved to true
+		saved, err := app.storage.Property.IsSaved(user.ID, p.ID)
+		if err != nil {
+			app.serverError(w, r, err)
+			return
+		}
+		if saved {
+			data.Listing.Saved = true
+		}
 	}
 	app.render(w, r, http.StatusOK, page, data)
 }
@@ -193,4 +203,80 @@ func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request)
 		Query: query,
 	}
 	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handleSaveListing(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+	p, err := app.storage.Property.Get(id)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	// TODO: clean this
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	redirectUrl := fmt.Sprintf("/listings/%d", p.ID)
+	err = app.storage.Property.Save(user.ID, p.ID)
+	if err != nil {
+		if errors.Is(err, storage.ErrDuplicateSave) {
+			app.sessionManager.Put(r.Context(), sessionFlashKey, "Listing Already Saved")
+			http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Listing Saved")
+	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
+}
+
+func (app *application) handleUnsaveListing(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+	p, err := app.storage.Property.Get(id)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	// TODO: clean this
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	redirectUrl := fmt.Sprintf("/listings/%d", p.ID)
+	err = app.storage.Property.Unsave(user.ID, p.ID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Listing Unsaved")
+	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 }
