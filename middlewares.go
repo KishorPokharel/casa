@@ -63,3 +63,18 @@ func (app *application) logRequest(next http.Handler) http.Handler {
 		}
 	})
 }
+
+func (app *application) methodOverride(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			method := r.PostFormValue("_method")
+			if method == "" {
+				method = r.Header.Get("X-HTTP-Method-Override")
+			}
+			if method == "PUT" || method == "PATCH" || method == "DELETE" {
+				r.Method = method
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
+}
