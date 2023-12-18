@@ -5,7 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"time"
+
+	"github.com/lib/pq"
 )
+
+var ErrDuplicateSave = errors.New("listing is already saved")
 
 type Property struct {
 	ID          int64
@@ -137,4 +141,40 @@ func (s *PropertyStorage) Get(id int64) (Property, error) {
 		return p, err
 	}
 	return p, nil
+}
+
+func (s *PropertyStorage) Save(userID, listingID int64) error {
+	query := `
+      insert into favorites (user_id, listing_id)
+      values ($1, $2)
+    `
+	args := []any{userID, listingID}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	_, err := s.DB.ExecContext(ctx, query, args...)
+	if err != nil {
+		pqErr, ok := err.(*pq.Error)
+		if ok && pqErr.Code.Name() == "unique_violation" {
+			return ErrDuplicateSave
+		}
+		return err
+	}
+	return nil
+}
+
+func (s *PropertyStorage) Unsave(userID, listingID int64) error {
+	query := `
+      delete from favorites
+      where user_id = $1 and listing_id = $2
+    `
+	args := []any{userID, listingID}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	_, err := s.DB.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
