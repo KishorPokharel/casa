@@ -35,3 +35,5 @@ create table if not exists favorites (
     user_id bigint references users(id) not null,
     listing_id bigint references listings(id) not null
 );
+
+alter table favorites add constraint unique_user_listing_pair unique(user_id, listing_id);
