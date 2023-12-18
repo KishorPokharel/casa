@@ -9,10 +9,18 @@
   <div class="meta">
     <span>{{ humanDate .Listing.CreatedAt }} | Posted by <b>{{ .Listing.Username }}</b></span>
     {{ if ne .User.ID .Listing.UserID }}
+    {{ if .Listing.Saved }}
+    <a onclick="saveBtn.click()" class="" href="#">unsave</a>
+    <form action="/listings/{{.Listing.ID}}/unsave" method="post">
+      <input type="hidden" name="_method" value="DELETE">
+      <button id="saveBtn" hidden type="submit">Unsave</button>
+    </form>
+    {{ else }}
     <a onclick="saveBtn.click()" class="" href="#">save</a>
     <form action="/listings/{{.Listing.ID}}/save" method="post">
       <button id="saveBtn" hidden type="submit">Save</button>
     </form>
+    {{ end }}
     {{ end }}
   </div>
   <img width="500" src="/uploads/{{.Listing.Banner}}" alt="">
