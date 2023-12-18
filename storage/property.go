@@ -17,6 +17,7 @@ type Property struct {
 	Price       int64
 	Username    string
 	CreatedAt   time.Time
+	Rank        float64
 }
 
 type PropertyStorage struct {
@@ -77,14 +78,17 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 	query := `
         select
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.created_at, users.id, users.username
+            listings.price, listings.created_at, users.id, users.username,
+            ts_rank(to_tsvector('simple', listings.location), plainto_tsquery($1)) * 3 +
+            ts_rank(to_tsvector('simple', listings.title), plainto_tsquery($1)) * 2 +
+            ts_rank(to_tsvector('simple', listings.description), plainto_tsquery($1)) * 1 as rank
         from
             listings
         join
             users on listings.user_id = users.id
         where
-            (to_tsvector('simple', location) @@ plainto_tsquery('simple', $1) or $1='')
-        order by listings.created_at desc
+            (to_tsvector('simple', location || ' ' || description || ' ' || title) @@ plainto_tsquery('simple', $1) or $1='')
+        order by rank desc
     `
 	args := []any{searchQuery}
 
@@ -99,7 +103,7 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username, &p.Rank)
 		if err != nil {
 			return nil, err
 		}
