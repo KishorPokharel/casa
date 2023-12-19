@@ -10,10 +10,12 @@
 /*   padding: 2rem; */
 /* } */
 
-.container {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: 100px 1fr;
+@media only screen and (min-width: 420px) {
+  .container {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 100px 1fr;
+  }
 }
 
 .red,
