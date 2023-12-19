@@ -5,22 +5,22 @@
 <h2>Your Profile</h2>
 
 <table>
-  <thead>
     <tr>
       <th>ID</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Created At</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
       <td>{{ .User.ID }}</td>
-      <td>{{ .User.Username }}</td>
-      <td>{{ .User.Email }}</td>
-      <td>{{ .User.CreatedAt }}</td>
     </tr>
-  </tbody>
+    <tr>
+      <th>Username</th>
+      <td>{{ .User.Username }}</td>
+    </tr>
+    <tr>
+      <th>Email</th>
+      <td>{{ .User.Email }}</td>
+    </tr>
+    <tr>
+      <th>Created At</th>
+      <td>{{ humanDate .User.CreatedAt }}</td>
+    </tr>
 </table>
 
 {{ end }}
