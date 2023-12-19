@@ -45,7 +45,7 @@
 
 .listing img {
   transform: scale(1.02);
-  border-radius: calc(1rem - 1px);
+  border-radius: calc(.8rem - 1px);
   width: 100%;
   object-fit: cover;
 }
@@ -67,4 +67,21 @@
   display: flex;
   gap: 2rem;
   align-items: center;
+}
+
+.listing-image {
+  max-width: 500px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.listing-image-grid > a > img {
+  border: 1px solid transparent;
+  width: 150px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.listing-image-grid > a > img:hover {
+  border: 1px solid steelblue;
 }

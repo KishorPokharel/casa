@@ -6,6 +6,7 @@
 
 <div class="single-listing listing__{{.Listing.ID}}">
   <h3>{{ .Listing.Title }}</h3>
+  <h4>NPR. {{ .Listing.Price }}</h4>
   <div class="meta">
     <span>{{ humanDate .Listing.CreatedAt }} | Posted by <b>{{ .Listing.Username }}</b></span>
     {{ if ne .User.ID .Listing.UserID }}
@@ -23,9 +24,32 @@
     {{ end }}
     {{ end }}
   </div>
-  <img width="500" src="/uploads/{{.Listing.Banner}}" alt="">
-  <h4>NPR. {{ .Listing.Price }}</h4>
+
+  <hr>
+
+  <img class="listing-image" src="/uploads/{{.Listing.Banner}}" alt="">
   <p>{{ .Listing.Location }}</p>
+
+  <hr>
+  
+  <h5>More images of this listing</h5>
+  <div class="listing-image-grid">
+    <a href="/uploads/banner_18ecfb59-fcdd-463b-bf50-6b2820512ceb.jpg" data-lightbox="listing-images">
+      <img src="/uploads/banner_18ecfb59-fcdd-463b-bf50-6b2820512ceb.jpg" alt="">
+    </a>
+    <a href="/uploads/banner_365b1801-5910-4a84-ba1e-71be01560400.jpg" data-lightbox="listing-images">
+      <img src="/uploads/banner_365b1801-5910-4a84-ba1e-71be01560400.jpg" alt="">
+    </a>
+    <a href="/uploads/banner_6a3bb9d8-6538-4aa4-965f-1de0a9f27f43.jpg" data-lightbox="listing-images">
+      <img src="/uploads/banner_6a3bb9d8-6538-4aa4-965f-1de0a9f27f43.jpg" alt="">
+    </a>
+    <a href="/uploads/banner_8099f557-58b5-4eb5-aad5-d644d74d470e.jpg" data-lightbox="listing-images">
+      <img src="/uploads/banner_8099f557-58b5-4eb5-aad5-d644d74d470e.jpg" alt="">
+    </a>
+  </div>
+
+  <hr>
+
   <p>{{ .Listing.Description }}</p>
 </div>
 
