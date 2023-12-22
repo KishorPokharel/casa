@@ -3,3 +3,5 @@ bin/
 .envrc
 tmp.txt
 uploads/
+seed/
+taskell.md

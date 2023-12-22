@@ -44,7 +44,7 @@ type propertyCreateForm struct {
 	validator.Validator
 }
 
-func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleNewListing(w http.ResponseWriter, r *http.Request) {
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
@@ -134,7 +134,7 @@ func (app *application) handleNewProperty(w http.ResponseWriter, r *http.Request
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *application) handleNewPropertyPage(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleNewListingPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/property_create.html"
 	data := app.newTemplateData(r)
 	data.Form = propertyCreateForm{}
