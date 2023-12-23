@@ -60,6 +60,7 @@ header {
   transform: scale(1.02);
   border-radius: calc(.8rem - 1px);
   width: 100%;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
 }
 
