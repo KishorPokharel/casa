@@ -196,3 +196,73 @@ func (s *PropertyStorage) IsSaved(userID, listingID int64) (bool, error) {
 	err := s.DB.QueryRowContext(ctx, query, args...).Scan(&exists)
 	return exists, err
 }
+
+func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
+	query := `
+        select 
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.created_at, users.id, users.username
+        from
+            listings
+        join
+            favorites on favorites.listing_id = listings.id
+        join
+            users on listings.user_id = users.id
+        where
+            favorites.user_id = $1
+        order by listings.created_at desc
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	rows, err := s.DB.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	listings := []Property{}
+	for rows.Next() {
+		p := Property{}
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+		if err != nil {
+			return nil, err
+		}
+		listings = append(listings, p)
+	}
+	return listings, nil
+}
+
+func (s *PropertyStorage) GetAllForUser(userID int64) ([]Property, error) {
+	query := `
+        select 
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.created_at, users.id, users.username
+        from
+            listings
+        join
+            users on listings.user_id = users.id
+        where
+            listings.user_id = $1
+        order by listings.created_at desc
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	rows, err := s.DB.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	listings := []Property{}
+	for rows.Next() {
+		p := Property{}
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+		if err != nil {
+			return nil, err
+		}
+		listings = append(listings, p)
+	}
+	return listings, nil
+}

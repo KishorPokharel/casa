@@ -167,5 +167,22 @@ func (app *application) handleProfilePage(w http.ResponseWriter, r *http.Request
 	}
 	data := app.newTemplateData(r)
 	data.User = user
+
+	// get my saved listings
+	savedListings, err := app.storage.Property.GetSavedListings(userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data.SavedListings = savedListings
+
+	// get my listings
+	listings, err := app.storage.Property.GetAllForUser(userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data.Listings = listings
+
 	app.render(w, r, http.StatusOK, page, data)
 }

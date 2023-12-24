@@ -23,4 +23,40 @@
     </tr>
 </table>
 
+<div>
+  <h3>Saved Listings</h3>
+  <div class="listings listings--saved">
+  {{ range .SavedListings }}
+    <div class="listing listing__{{.ID}}">
+      <img onclick="location.href='/listings/{{.ID}}'" width="500" src="/uploads/{{.Banner}}" alt="">
+      <div class="listing_body">
+        <h3 onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</h3>
+        <h5>{{ .Location }}</h5>
+        <h4>{{ formatPrice .Price }}</h4>
+        <small>{{ humanDate .CreatedAt }} | Posted by <b>{{ .Username }}</b></small>
+      </div>
+    </div>
+  {{ end }}
+  </div>
+</div>
+
+<hr>
+
+<div>
+  <h3>Your Listings</h3>
+  <div class="listings listings--saved">
+  {{ range .Listings }}
+    <div class="listing listing__{{.ID}}">
+      <img onclick="location.href='/listings/{{.ID}}'" width="500" src="/uploads/{{.Banner}}" alt="">
+      <div class="listing_body">
+        <h3 onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</h3>
+        <h5>{{ .Location }}</h5>
+        <h4>{{ formatPrice .Price }}</h4>
+        <small>{{ humanDate .CreatedAt }} | Posted by <b>{{ .Username }}</b></small>
+      </div>
+    </div>
+  {{ end }}
+  </div>
+</div>
+
 {{ end }}

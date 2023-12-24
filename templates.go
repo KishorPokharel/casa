@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/KishorPokharel/casa/storage"
-    "github.com/leekchan/accounting"
+	"github.com/leekchan/accounting"
 )
 
 type templateData struct {
@@ -18,6 +18,7 @@ type templateData struct {
 	User            storage.User
 	Listings        []storage.Property
 	Listing         storage.Property
+	SavedListings   []storage.Property
 }
 
 func humanDate(t time.Time) string {
@@ -30,8 +31,8 @@ func humanDate(t time.Time) string {
 var ac = accounting.Accounting{Symbol: "NPR ", Precision: 2, FormatNegative: "%s -%v"}
 
 var functions = template.FuncMap{
-	"humanDate": humanDate,
-    "formatPrice": ac.FormatMoney,
+	"humanDate":   humanDate,
+	"formatPrice": ac.FormatMoney,
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {
