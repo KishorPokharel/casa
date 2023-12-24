@@ -24,7 +24,7 @@
     <div class="listing_body">
       <h3 onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</h3>
       <h5>{{ .Location }}</h5>
-      <h4>NPR. {{ .Price }}</h4>
+      <h4>{{ formatPrice .Price }}</h4>
       <small>{{ humanDate .CreatedAt }} | Posted by <b>{{ .Username }}</b></small>
     </div>
   </div>

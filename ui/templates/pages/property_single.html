@@ -6,7 +6,7 @@
 
 <div class="single-listing listing__{{.Listing.ID}}">
   <h3>{{ .Listing.Title }}</h3>
-  <h4>NPR. {{ .Listing.Price }}</h4>
+  <h4>{{ formatPrice .Listing.Price }}</h4>
   <div class="meta">
     <span>{{ humanDate .Listing.CreatedAt }} | Posted by <b>{{ .Listing.Username }}</b></span>
     {{ if ne .User.ID .Listing.UserID }}
