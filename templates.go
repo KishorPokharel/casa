@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/KishorPokharel/casa/storage"
+    "github.com/leekchan/accounting"
 )
 
 type templateData struct {
@@ -26,8 +27,11 @@ func humanDate(t time.Time) string {
 	return t.UTC().Format("02 Jan 2006 at 15:04")
 }
 
+var ac = accounting.Accounting{Symbol: "NPR ", Precision: 2, FormatNegative: "%s -%v"}
+
 var functions = template.FuncMap{
 	"humanDate": humanDate,
+    "formatPrice": ac.FormatMoney,
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {
