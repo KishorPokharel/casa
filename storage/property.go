@@ -210,7 +210,7 @@ func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
             users on listings.user_id = users.id
         where
             favorites.user_id = $1
-        order by listings.created_at desc
+        order by favorites.created_at desc
     `
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
