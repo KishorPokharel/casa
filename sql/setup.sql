@@ -33,7 +33,8 @@ create table if not exists listings (
 
 create table if not exists favorites (
     user_id bigint references users(id) not null,
-    listing_id bigint references listings(id) not null
+    listing_id bigint references listings(id) not null,
+    created_at timestamp(0) with time zone not null default now()
 );
 
 alter table favorites add constraint unique_user_listing_pair unique(user_id, listing_id);
