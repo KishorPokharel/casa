@@ -29,7 +29,7 @@ func (app *application) handleHomePage(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, page, data)
 }
 
-const imageDir = "./uploads/"
+const uploadDir = "./uploads/"
 
 type propertyCreateForm struct {
 	// ListingType   string
@@ -46,7 +46,7 @@ type propertyCreateForm struct {
 
 func (app *application) handleNewListing(w http.ResponseWriter, r *http.Request) {
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
-	err := r.ParseMultipartForm(10 << 20)
+	err := r.ParseMultipartForm(10 << 20) // 10MB
 	if err != nil {
 		app.logger.Error(err.Error())
 		app.clientError(w, http.StatusBadRequest)
@@ -110,7 +110,7 @@ func (app *application) handleNewListing(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	out, err := os.Create(filepath.Join(imageDir, name))
+	out, err := os.Create(filepath.Join(uploadDir, name))
 	defer out.Close()
 	_, err = out.Write(b)
 	if err != nil {
