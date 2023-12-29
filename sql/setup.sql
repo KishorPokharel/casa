@@ -31,6 +31,14 @@ create table if not exists listings (
     created_at timestamp(0) with time zone not null default now()
 );
 
+create table if not exists pictures (
+    listing_id bigint references listings(id) not null,
+    url text not null,
+    featured boolean not null default false,
+    created_at timestamptz(0) not null default now(),
+    deleted_at timestamptz(0)
+);
+
 create table if not exists favorites (
     user_id bigint references users(id) not null,
     listing_id bigint references listings(id) not null,
