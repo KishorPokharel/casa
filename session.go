@@ -1,4 +1,6 @@
 package main
 
-var sessionAuthKey = "authenticatedUserID"
-var sessionFlashKey = "flash"
+var (
+	sessionAuthKey  = "authenticatedUserID"
+	sessionFlashKey = "flash"
+)
