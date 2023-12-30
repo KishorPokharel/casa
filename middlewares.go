@@ -1,30 +1,11 @@
 package main
 
 import (
-	"context"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 )
-
-// request id
-type requestIDKey string
-
-const requestIDContextKey = requestIDKey("request_id")
-
-func contextSetRequestID(r *http.Request, id string) *http.Request {
-	ctx := context.WithValue(r.Context(), requestIDContextKey, id)
-	return r.WithContext(ctx)
-}
-
-func contextGetRequestID(r *http.Request) string {
-	requestID, ok := r.Context().Value(requestIDContextKey).(string)
-	if !ok {
-		panic("missing request ID in request context")
-	}
-	return requestID
-}
 
 func (app *application) requestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
