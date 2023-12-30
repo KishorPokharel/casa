@@ -21,18 +21,20 @@ type config struct {
 
 func main() {
 	debug := flag.Bool("debug", false, "Enable debug mode")
+	port := flag.Int("port", 3000, "Port to listen")
+	dsn := flag.String("db-dsn", os.Getenv("CASA_DB_DSN"), "Db dsn")
+
 	flag.Parse()
 
-	dsn := os.Getenv("CASA_DB_DSN")
 	config := &config{
-		port:  3000,
+		port:  *port,
 		debug: *debug,
 	}
 	app := &application{
 		logger: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 		config: config,
 	}
-	db, err := openDB(dsn)
+	db, err := openDB(*dsn)
 	if err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(1)
