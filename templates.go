@@ -12,6 +12,7 @@ import (
 )
 
 type templateData struct {
+	CurrentYear     int
 	Flash           string
 	Form            any
 	IsAuthenticated bool
@@ -37,6 +38,7 @@ var functions = template.FuncMap{
 
 func (app *application) newTemplateData(r *http.Request) templateData {
 	data := templateData{
+		CurrentYear:     time.Now().Year(),
 		Flash:           app.sessionManager.PopString(r.Context(), sessionFlashKey),
 		IsAuthenticated: app.isAuthenticated(r),
 	}
