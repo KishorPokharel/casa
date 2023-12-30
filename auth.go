@@ -43,6 +43,8 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		// we check again because user may be deleted but session still exists
+		// we could also check if user account is activated/banned later on, right here
 		exists, err := app.storage.Users.Exists(id)
 		if err != nil {
 			app.serverError(w, r, err)
