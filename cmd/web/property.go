@@ -29,8 +29,6 @@ func (app *application) handleHomePage(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, page, data)
 }
 
-const uploadDir = "./uploads/"
-
 type propertyCreateForm struct {
 	// ListingType   string
 	// PropertyType  string

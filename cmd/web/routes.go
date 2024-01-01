@@ -11,10 +11,8 @@ func (app *application) routes() http.Handler {
 	r := httprouter.New()
 
 	// serve static files
-	dir := http.Dir("./ui/public/")
-	uploadsDir := http.Dir("./uploads/")
-	r.ServeFiles("/public/*filepath", dir)
-	r.ServeFiles("/uploads/*filepath", uploadsDir)
+	r.ServeFiles("/public/*filepath", http.Dir(publicDir))
+	r.ServeFiles("/uploads/*filepath", http.Dir(uploadDir))
 
 	dynamic := alice.New(app.sessionManager.LoadAndSave, app.authenticate)
 
