@@ -1,4 +1,5 @@
 include .envrc
+
 ## help: print this help message
 .PHONY: help
 help:
@@ -12,7 +13,7 @@ confirm:
 ## run/app: run the application with go
 .PHONY: run/app
 run/app:
-	CASA_DB_DSN=${CASA_DB_DSN} go run ./...
+	CASA_DB_DSN=${CASA_DB_DSN} go run ./cmd/web/...
 
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
@@ -37,7 +38,7 @@ audit:
 .PHONY: build/app
 build/app:
 	@echo 'Building app...'
-	go build -ldflags='-s' -o=./bin/casa ./*.go
+	go build -ldflags='-s' -o=./bin/casa ./cmd/web/*.go
 
 ## build/run: build and run the app
 .PHONY: build/run
