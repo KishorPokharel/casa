@@ -2,7 +2,7 @@
 
 {{ define "main" }}
 
-<h2>Login</h2>
+<h4>Login</h4>
 
 {{range .Form.NonFieldErrors}}
     <div class='red'>{{.}}</div>
@@ -11,14 +11,22 @@
 <form action="/login" method="post">
   <div>
     <label for="email">Email</label>
-    <input name="email" id="email" type="email" value="{{ .Form.Email }}">
+    <input 
+      {{ with .Form.FieldErrors.email }}
+      aria-invalid="true"
+      {{ end }}
+      name="email" id="email" type="email" value="{{ .Form.Email }}">
     {{ with .Form.FieldErrors.email }}
     <small class="red">{{ . }}</small>
     {{ end }}
   </div>
   <div>
     <label for="password">Password</label>
-    <input name="password" id="password" type="password">
+    <input 
+      {{ with .Form.FieldErrors.password }}
+      aria-invalid="true"
+      {{ end }}
+      name="password" id="password" type="password">
     {{ with .Form.FieldErrors.password }}
     <small class="red">{{ . }}</small>
     {{ end }}

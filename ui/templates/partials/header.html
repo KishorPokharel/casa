@@ -1,15 +1,10 @@
 {{ define "header" }}
-<header>
-  <a href="/"><h3>Casa</h3></a>
-  <ul class="nav">
-    <li><a href="/">Home</a></li>
+<nav>
+  <ul>
+    <li><a href="/"><strong>Casa</strong></a></li>
+  </ul>
+  <ul>
     {{ if .IsAuthenticated }}
-    <li><a href="/listings">New</a></li>
-    {{ end }}
-    <!-- <li><a href="/search">Search</a></li> -->
-    {{ if .IsAuthenticated }}
-    <li><a href="/profile">Profile</a></li>
-    <li><a href="#" onclick="logoutLink.click()">Logout</a></li>
     <li>
       <form action="/logout" method="post">
         <button hidden id="logoutLink">Logout</button>
@@ -19,6 +14,20 @@
     <li><a href="/login">Login</a></li>
     <li><a href="/register">Register</a></li>
     {{ end }}
+    <li><a href="/listings" role="button" class="outline">Post a Listing</a></li>
+
+    {{ if .IsAuthenticated }}
+    <li>
+      <details role="list" dir="rtl">
+        <summary aria-haspopup="listbox" role="link">Account</summary>
+        <ul role="listbox">
+          <li><a href="/profile">Profile</a></li>
+          <!-- <li><a>Dashboard</a></li> -->
+          <li><a href="#" onclick="logoutLink.click()">Logout</a></li>
+        </ul>
+      </details>
+    </li>
+    {{ end }}
   </ul>
-</header>
+</nav>
 {{ end }}

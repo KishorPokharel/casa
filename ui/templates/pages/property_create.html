@@ -22,7 +22,11 @@
   <!-- </div> -->
   <div>
     <label for="title">Title</label>
-    <input id="title" type="text" name="title" value="{{ .Form.Title }}">
+    <input 
+      {{ with .Form.FieldErrors.title }}
+      aria-invalid="true"
+      {{ end }}
+      id="title" type="text" name="title" value="{{ .Form.Title }}">
     {{ with .Form.FieldErrors.title }}
     <small class="red">{{ . }}</small>
     {{ end }}

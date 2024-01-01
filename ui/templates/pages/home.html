@@ -2,29 +2,48 @@
 
 {{ define "main" }}
 
-<h2>Welcome to Casa</h2>
-<p>Making buying and selling homes, land and renting apartments straightforward and accessible for everyone.</p>
-
-<form action="/search" method="get">
-  <input autofocus type="text" name="query" placeholder="Enter a location">
-</form>
-
-<hr>
-
-<h2>Recent Listings</h2>
-
-<div class="listings">
-{{ range .Listings }}
-  <div class="listing listing__{{.ID}}">
-    <img onclick="location.href='/listings/{{.ID}}'" width="500" src="/uploads/{{.Banner}}" alt="">
-    <div class="listing_body">
-      <h3 onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</h3>
-      <h5>{{ .Location }}</h5>
-      <h4>{{ formatPrice .Price }}</h4>
-      <small>{{ humanDate .CreatedAt }} | Posted by <b>{{ .Username }}</b></small>
-    </div>
-  </div>
-{{ end }}
+<!-- INTRO -->
+<div class="intro" style="padding: 2rem 0">
+  <hgroup>
+    <h1>Welcome to Casa</h1>
+    <p>Making buying and selling homes, land and renting apartments straightforward and accessible for everyone.</p>
+  </hgroup>
 </div>
+<!-- INTRO -->
+
+<!-- SEARCH -->
+<div>
+  <form action="/search" method="get">
+    <input autofocus type="search" name="query" placeholder="Enter a location">
+  </form>
+</div>
+<!-- END SEARCH -->
+
+<!-- LISTINGS GRID -->
+<div>
+  <h2>Recent Listings</h2>
+  <div class="listings">
+  {{ range .Listings }}
+    <div class="listing listing__{{.ID}}">
+      <img onclick="location.href='/listings/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
+      <div class="listing_body">
+        <hgroup>
+          <div class="location">
+            <!-- <img src="/images/map-pin.svg" alt=""> -->
+            <small>{{ .Location }}</small>
+          </div>
+          <h6><a href="/listings/{{.ID}}">{{ .Title }}</a></h6>
+          <p>{{ formatPrice .Price }}</p>
+        </hgroup>
+        <hr>
+        <small>
+          {{ humanDate .CreatedAt }} <br> Posted by <a href="#">{{ .Username }}</a>
+        </small>
+      </div>
+    </div>
+  {{ end }}
+  </div>
+</div>
+<!-- LISTINGS GRID -->
 
 {{ end }}

@@ -52,13 +52,13 @@ header {
 }
 
 .listing {
-  border-radius: 1rem;
+  border-radius: 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .listing img {
   transform: scale(1.02);
-  border-radius: calc(.8rem - 1px);
+  border-radius: calc(.4rem - 1px);
   width: 100%;
   aspect-ratio: 3 / 2;
   object-fit: cover;

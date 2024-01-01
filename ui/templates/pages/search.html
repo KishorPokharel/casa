@@ -11,15 +11,23 @@
 
 <div class="listings">
 {{ range .Listings }}
-  <div class="listing listing__{{.ID}}">
-    <img onclick="location.href='/listings/{{.ID}}'" width="500" src="/uploads/{{.Banner}}" alt="">
-    <div class="listing_body">
-      <h3 onclick="location.href='/listings/{{.ID}}'" class="pointer">{{ .Title }}</h3>
-      <h5>{{ .Location }}</h5>
-      <h4>{{ formatPrice .Price }}</h4>
-      <small>{{ humanDate .CreatedAt }} | Posted by <b>{{ .Username }}</b></small>
-    </div>
+<div class="listing listing__{{.ID}}">
+  <img onclick="location.href='/listings/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
+  <div class="listing_body">
+    <hgroup>
+      <div class="location">
+        <!-- <img src="/images/map-pin.svg" alt=""> -->
+        <small>{{ .Location }}</small>
+      </div>
+      <h6><a href="/listings/{{.ID}}">{{ .Title }}</a></h6>
+      <p>{{ formatPrice .Price }}</p>
+    </hgroup>
+    <hr>
+    <small>
+      {{ humanDate .CreatedAt }} <br> Posted by <a href="#">{{ .Username }}</a>
+    </small>
   </div>
+</div>
 {{ end }}
 </div>
 {{ end }}
