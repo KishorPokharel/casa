@@ -9,21 +9,33 @@
 <form action="/register" method="post">
   <div>
     <label for="username">Username</label>
-    <input id="username" type="text" name="username" value="{{ .Form.Username }}">
+    <input 
+      {{ with .Form.FieldErrors.username }}
+      aria-invalid="true"
+      {{ end }}
+    id="username" type="text" name="username" value="{{ .Form.Username }}">
     {{ with .Form.FieldErrors.username }}
     <small class="red">{{ . }}</small>
     {{ end }}
   </div>
   <div>
     <label for="email">Email</label>
-    <input id="email" type="email" name="email" value="{{ .Form.Email }}">
+    <input 
+      {{ with .Form.FieldErrors.email }}
+      aria-invalid="true"
+      {{ end }}
+    id="email" type="email" name="email" value="{{ .Form.Email }}">
     {{ with .Form.FieldErrors.email }}
     <small class="red">{{ . }}</small>
     {{ end }}
   </div>
   <div>
     <label for="password1">Password</label>
-    <input id="password1" type="password" name="password">
+    <input
+      {{ with .Form.FieldErrors.password }}
+      aria-invalid="true"
+      {{ end }}
+    id="password1" type="password" name="password">
     {{ with .Form.FieldErrors.password }}
     <small class="red">{{ . }}</small>
     {{ end }}
