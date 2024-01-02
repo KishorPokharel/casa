@@ -2,29 +2,26 @@
 
 {{ define "main" }}
 
-<h2>Your Profile</h2>
+<section>
+  <h4>Your Profile</h4>
+  <form>
+    <div>
+      <label for="">Username</label>
+      <input type="text" value="{{.User.Username}}" readonly>
+    </div>
+    <div>
+      <label for="">Email</label>
+      <input type="text" value="{{.User.Email}}" readonly>
+    </div>
+    <div>
+      <label for="">Created At</label>
+      <input type="text" value="{{humanDate .User.CreatedAt}}" readonly>
+    </div>
+  </form>
+</section>
 
-<table>
-    <tr>
-      <th>ID</th>
-      <td>{{ .User.ID }}</td>
-    </tr>
-    <tr>
-      <th>Username</th>
-      <td>{{ .User.Username }}</td>
-    </tr>
-    <tr>
-      <th>Email</th>
-      <td>{{ .User.Email }}</td>
-    </tr>
-    <tr>
-      <th>Created At</th>
-      <td>{{ humanDate .User.CreatedAt }}</td>
-    </tr>
-</table>
-
-<div>
-  <h3>Saved Listings</h3>
+<section>
+  <h4>Saved Listings</h4>
   <div class="listings listings--saved">
   {{ range .SavedListings }}
   <div class="listing listing__{{.ID}}">
@@ -46,12 +43,10 @@
     </div>
   {{ end }}
   </div>
-</div>
+</section>
 
-<hr>
-
-<div>
-  <h3>Your Listings</h3>
+<section>
+  <h4>Your Listings</h4>
   <div class="listings listings--saved">
   {{ range .Listings }}
   <div class="listing listing__{{.ID}}">
@@ -73,6 +68,6 @@
     </div>
   {{ end }}
   </div>
-</div>
+</section>
 
 {{ end }}
