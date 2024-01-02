@@ -2,32 +2,37 @@
 
 {{ define "main" }}
 
-<h2>Search For Property Here</h2>
+<section>
+  <h4>Search For Property Here</h4>
 
-<form action="/search" method="get">
-  <input autofocus type="text" name="query" placeholder="Enter a location" value="{{ .Form.Query }}">
-  <!-- <button type="submit">Search</button> -->
-</form>
+  <form action="/search" method="get">
+    <input autofocus type="search" name="query" placeholder="Enter a location" value="{{ .Form.Query }}">
+  </form>
 
-<div class="listings">
-{{ range .Listings }}
-<div class="listing listing__{{.ID}}">
-  <img onclick="location.href='/listings/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
-  <div class="listing_body">
-    <hgroup>
-      <div class="location">
-        <!-- <img src="/images/map-pin.svg" alt=""> -->
-        <small>{{ .Location }}</small>
-      </div>
-      <h6><a href="/listings/{{.ID}}">{{ .Title }}</a></h6>
-      <p>{{ formatPrice .Price }}</p>
-    </hgroup>
-    <hr>
-    <small>
-      {{ humanDate .CreatedAt }} <br> Posted by <a href="#">{{ .Username }}</a>
-    </small>
+  {{ if eq (len .Listings) 0 }}
+  <p>No Listings</p>
+  {{ end }}
+  <div class="listings">
+  {{ range .Listings }}
+  <div class="listing listing__{{.ID}}">
+    <img onclick="location.href='/listings/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
+    <div class="listing_body">
+      <hgroup>
+        <div class="location">
+          <!-- <img src="/images/map-pin.svg" alt=""> -->
+          <small>{{ .Location }}</small>
+        </div>
+        <h6><a href="/listings/{{.ID}}">{{ .Title }}</a></h6>
+        <p>{{ formatPrice .Price }}</p>
+      </hgroup>
+      <hr>
+      <small>
+        {{ humanDate .CreatedAt }} <br> Posted by <a href="#">{{ .Username }}</a>
+      </small>
+    </div>
   </div>
-</div>
+  {{ end }}
+  </div>
+</section>
 {{ end }}
-</div>
-{{ end }}
+
