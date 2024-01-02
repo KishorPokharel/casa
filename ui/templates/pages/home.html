@@ -3,12 +3,12 @@
 {{ define "main" }}
 
 <!-- INTRO -->
-<div class="intro" style="padding: 2rem 0">
+<section>
   <hgroup>
-    <h1>Welcome to Casa</h1>
+    <h3>Welcome to Casa</h3>
     <p>Making buying and selling homes, land and renting apartments straightforward and accessible for everyone.</p>
   </hgroup>
-</div>
+</section>
 <!-- INTRO -->
 
 <!-- SEARCH -->
@@ -20,8 +20,8 @@
 <!-- END SEARCH -->
 
 <!-- LISTINGS GRID -->
-<div>
-  <h2>Recent Listings</h2>
+<section>
+  <h4>Recent Listings</h4>
   <div class="listings">
   {{ range .Listings }}
     <div class="listing listing__{{.ID}}">
@@ -43,7 +43,7 @@
     </div>
   {{ end }}
   </div>
-</div>
+</section>
 <!-- LISTINGS GRID -->
 
 {{ end }}
