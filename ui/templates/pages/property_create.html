@@ -47,7 +47,6 @@
   <div>
     <label for="location">Location</label>
     <input 
-
       {{ with .Form.FieldErrors.location }}
       aria-invalid="true"
       {{ end }}
@@ -58,7 +57,11 @@
   </div>
   <div>
     <label for="price">Price</label>
-    <input id="price" type="number" name="price" value="{{ .Form.Price }}">
+    <input 
+      {{ with .Form.FieldErrors.price }}
+      aria-invalid="true"
+      {{ end }}
+    id="price" type="number" name="price" value="{{ .Form.Price }}">
     {{ with .Form.FieldErrors.price }}
     <small class="red">{{ . }}</small>
     {{ end }}
@@ -77,7 +80,11 @@
   <!-- </div> -->
   <div>
     <label for="description">Description</label>
-    <textarea id="description" name="description">{{ .Form.Description }}</textarea>
+    <textarea 
+      {{ with .Form.FieldErrors.description }}
+      aria-invalid="true"
+      {{ end }}
+      id="description" name="description">{{ .Form.Description }}</textarea>
     {{ with .Form.FieldErrors.description }}
     <small class="red">{{ . }}</small>
     {{ end }}
