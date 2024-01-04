@@ -46,7 +46,12 @@
   <!-- </div> -->
   <div>
     <label for="location">Location</label>
-    <input id="location" name="location" type="text" value="{{ .Form.Location }}">
+    <input 
+
+      {{ with .Form.FieldErrors.location }}
+      aria-invalid="true"
+      {{ end }}
+    id="location" name="location" type="text" value="{{ .Form.Location }}">
     {{ with .Form.FieldErrors.location }}
     <small class="red">{{ . }}</small>
     {{ end }}
