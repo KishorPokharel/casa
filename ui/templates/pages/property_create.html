@@ -3,96 +3,96 @@
 {{ define "main" }}
 
 <section>
-<h4>Create New Property Listing</h4>
-
-<form action="/listings" method="post" enctype="multipart/form-data">
-  <!-- <div> -->
-  <!--   <label for="rent_or_sale">For</label> -->
-  <!--   <select id="rent_or_sale" name="listing_type"> -->
-  <!--     <option value="sale">Sale</option> -->
-  <!--     <option value="rent">Rent</option> -->
-  <!--   </select> -->
-  <!-- </div> -->
-  <!-- <div> -->
-  <!--   <label for="property">Property Type</label> -->
-  <!--   <select id="property" name="property_type"> -->
-  <!--     <option value="house">House</option> -->
-  <!--     <option value="land">Land</option> -->
-  <!--     <option value="apartment">Apartment</option> -->
-  <!--   </select> -->
-  <!-- </div> -->
-  <div>
-    <label for="title">Title</label>
-    <input 
-      {{ with .Form.FieldErrors.title }}
-      aria-invalid="true"
-      {{ end }}
-      id="title" type="text" name="title" value="{{ .Form.Title }}">
-    {{ with .Form.FieldErrors.title }}
-    <small class="red">{{ . }}</small>
-    {{ end }}
+    <div>
+      <h4>Create New Property Listing</h4>
+      <form action="/listings" method="post" enctype="multipart/form-data">
+      <!-- <div> -->
+      <!--   <label for="rent_or_sale">For</label> -->
+      <!--   <select id="rent_or_sale" name="listing_type"> -->
+      <!--     <option value="sale">Sale</option> -->
+      <!--     <option value="rent">Rent</option> -->
+      <!--   </select> -->
+      <!-- </div> -->
+      <!-- <div> -->
+      <!--   <label for="property">Property Type</label> -->
+      <!--   <select id="property" name="property_type"> -->
+      <!--     <option value="house">House</option> -->
+      <!--     <option value="land">Land</option> -->
+      <!--     <option value="apartment">Apartment</option> -->
+      <!--   </select> -->
+      <!-- </div> -->
+      <div>
+        <label for="title">Title</label>
+        <input 
+          {{ with .Form.FieldErrors.title }}
+          aria-invalid="true"
+          {{ end }}
+          id="title" type="text" name="title" value="{{ .Form.Title }}">
+        {{ with .Form.FieldErrors.title }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <!-- <div> -->
+      <!--   <label for="province">Province</label> -->
+      <!--   <select id="province" name="province"> -->
+      <!--     <option value="koshi">Koshi</option> -->
+      <!--     <option value="madhesh">Madhesh</option> -->
+      <!--     <option value="bagmati">Bagmati</option> -->
+      <!--     <option value="gandaki">Gandaki</option> -->
+      <!--     <option value="lumbini">Lumbini</option> -->
+      <!--     <option value="karnali">Karnali</option> -->
+      <!--     <option value="sudurpaschim">Sudurpaschim</option> -->
+      <!--   </select> -->
+      <!-- </div> -->
+      <div>
+        <label for="location">Location</label>
+        <input 
+          {{ with .Form.FieldErrors.location }}
+          aria-invalid="true"
+          {{ end }}
+        id="location" name="location" type="text" value="{{ .Form.Location }}">
+        {{ with .Form.FieldErrors.location }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="price">Price</label>
+        <input 
+          {{ with .Form.FieldErrors.price }}
+          aria-invalid="true"
+          {{ end }}
+        id="price" type="number" name="price" value="{{ .Form.Price }}">
+        {{ with .Form.FieldErrors.price }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="thumbnail">Thumbnail</label>
+        <input required id="thumbnail" type="file" name="thumbnail" accept="image/jpeg, image/png, image/jpg">
+      </div>
+      <!-- <div> -->
+      <!--   <label>Furnish Status</label> -->
+      <!--   <select id="" name="furnish_status"> -->
+      <!--     <option value="full-furnished">Full-Furnished</option> -->
+      <!--     <option value="un-furnished">Un-Furnished</option> -->
+      <!--     <option value="semi-furnished">Semi-Furnished</option> -->
+      <!--   </select> -->
+      <!-- </div> -->
+      <div>
+        <label for="description">Description</label>
+        <textarea 
+          {{ with .Form.FieldErrors.description }}
+          aria-invalid="true"
+          {{ end }}
+          id="description" name="description">{{ .Form.Description }}</textarea>
+        {{ with .Form.FieldErrors.description }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <button type="submit">Create</button>
+      </div>
+    </form>
   </div>
-  <!-- <div> -->
-  <!--   <label for="province">Province</label> -->
-  <!--   <select id="province" name="province"> -->
-  <!--     <option value="koshi">Koshi</option> -->
-  <!--     <option value="madhesh">Madhesh</option> -->
-  <!--     <option value="bagmati">Bagmati</option> -->
-  <!--     <option value="gandaki">Gandaki</option> -->
-  <!--     <option value="lumbini">Lumbini</option> -->
-  <!--     <option value="karnali">Karnali</option> -->
-  <!--     <option value="sudurpaschim">Sudurpaschim</option> -->
-  <!--   </select> -->
-  <!-- </div> -->
-  <div>
-    <label for="location">Location</label>
-    <input 
-      {{ with .Form.FieldErrors.location }}
-      aria-invalid="true"
-      {{ end }}
-    id="location" name="location" type="text" value="{{ .Form.Location }}">
-    {{ with .Form.FieldErrors.location }}
-    <small class="red">{{ . }}</small>
-    {{ end }}
-  </div>
-  <div>
-    <label for="price">Price</label>
-    <input 
-      {{ with .Form.FieldErrors.price }}
-      aria-invalid="true"
-      {{ end }}
-    id="price" type="number" name="price" value="{{ .Form.Price }}">
-    {{ with .Form.FieldErrors.price }}
-    <small class="red">{{ . }}</small>
-    {{ end }}
-  </div>
-  <div>
-    <label for="thumbnail">Thumbnail</label>
-    <input required id="thumbnail" type="file" name="thumbnail" accept="image/jpeg, image/png, image/jpg">
-  </div>
-  <!-- <div> -->
-  <!--   <label>Furnish Status</label> -->
-  <!--   <select id="" name="furnish_status"> -->
-  <!--     <option value="full-furnished">Full-Furnished</option> -->
-  <!--     <option value="un-furnished">Un-Furnished</option> -->
-  <!--     <option value="semi-furnished">Semi-Furnished</option> -->
-  <!--   </select> -->
-  <!-- </div> -->
-  <div>
-    <label for="description">Description</label>
-    <textarea 
-      {{ with .Form.FieldErrors.description }}
-      aria-invalid="true"
-      {{ end }}
-      id="description" name="description">{{ .Form.Description }}</textarea>
-    {{ with .Form.FieldErrors.description }}
-    <small class="red">{{ . }}</small>
-    {{ end }}
-  </div>
-  <div>
-    <button type="submit">Create</button>
-  </div>
-</form>
-
 </section>
 {{ end }}

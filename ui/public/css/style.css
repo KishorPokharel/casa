@@ -3,10 +3,6 @@
   color: red;
 }
 
-.flash {
-  color: steelblue;
-}
-
 .listings {
   display: grid;
   gap: 2rem;
@@ -60,4 +56,22 @@
 
 .listing-image-grid > a > img:hover {
   border: 1px solid steelblue;
+}
+
+.form {
+  width: min(600px, 100%);
+  margin: auto;
+}
+
+.flash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: steelblue;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.info {
+  color: #fff;
 }
