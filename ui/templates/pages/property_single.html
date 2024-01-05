@@ -14,13 +14,13 @@
     {{ if ne .User.ID .Listing.UserID }}
     {{ if .Listing.Saved }}
     <a onclick="saveBtn.click()" class="" href="#">unsave</a>
-    <form action="/listings/{{.Listing.ID}}/unsave" method="post">
+    <form action="/listings/unsave/{{.Listing.ID}}" method="post">
       <input type="hidden" name="_method" value="DELETE">
       <button id="saveBtn" hidden type="submit">Unsave</button>
     </form>
     {{ else }}
     <a onclick="saveBtn.click()" class="" href="#">save</a>
-    <form action="/listings/{{.Listing.ID}}/save" method="post">
+    <form action="/listings/save/{{.Listing.ID}}" method="post">
       <button id="saveBtn" hidden type="submit">Save</button>
     </form>
     {{ end }}

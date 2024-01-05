@@ -32,12 +32,12 @@ func (app *application) routes() http.Handler {
 	// protected routes
 	protected := dynamic.Append(app.requireAuthentication)
 
-	r.Handler(http.MethodGet, "/listings", protected.ThenFunc(app.handleNewListingPage))
-	r.Handler(http.MethodPost, "/listings", protected.ThenFunc(app.handleNewListing))
+	r.Handler(http.MethodGet, "/listings/create", protected.ThenFunc(app.handleNewListingPage))
+	r.Handler(http.MethodPost, "/listings/create", protected.ThenFunc(app.handleNewListing))
 	r.Handler(http.MethodGet, "/profile", protected.ThenFunc(app.handleProfilePage))
 	r.Handler(http.MethodPost, "/users/logout", protected.ThenFunc(app.handleLogout))
-	r.Handler(http.MethodPost, "/listings/:id/save", protected.ThenFunc(app.handleSaveListing))
-	r.Handler(http.MethodDelete, "/listings/:id/unsave", protected.ThenFunc(app.handleUnsaveListing))
+	r.Handler(http.MethodPost, "/listings/save/:id", protected.ThenFunc(app.handleSaveListing))
+	r.Handler(http.MethodDelete, "/listings/unsave/:id", protected.ThenFunc(app.handleUnsaveListing))
 
 	standard := alice.New(app.methodOverride, app.requestID, app.logRequest)
 	return standard.Then(r)
