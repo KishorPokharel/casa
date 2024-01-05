@@ -162,7 +162,7 @@ func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.R
 		user, err := app.storage.Users.Get(userID)
 		if err != nil {
 			if errors.Is(err, storage.ErrNoRecord) {
-				http.Redirect(w, r, "/login", http.StatusSeeOther)
+				http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 			} else {
 				app.serverError(w, r, err)
 			}
@@ -223,7 +223,7 @@ func (app *application) handleSaveListing(w http.ResponseWriter, r *http.Request
 	user, err := app.storage.Users.Get(userID)
 	if err != nil {
 		if errors.Is(err, storage.ErrNoRecord) {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 		} else {
 			app.serverError(w, r, err)
 		}
@@ -263,7 +263,7 @@ func (app *application) handleUnsaveListing(w http.ResponseWriter, r *http.Reque
 	user, err := app.storage.Users.Get(userID)
 	if err != nil {
 		if errors.Is(err, storage.ErrNoRecord) {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 		} else {
 			app.serverError(w, r, err)
 		}

@@ -77,7 +77,7 @@ func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "User Registered. Please Login.")
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
 
 type userLoginForm struct {
@@ -150,7 +150,7 @@ func (app *application) handleLogout(w http.ResponseWriter, r *http.Request) {
 	app.sessionManager.Remove(r.Context(), sessionAuthKey)
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "You've been logged out successfully!")
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
 
 func (app *application) handleProfilePage(w http.ResponseWriter, r *http.Request) {
@@ -159,7 +159,7 @@ func (app *application) handleProfilePage(w http.ResponseWriter, r *http.Request
 	user, err := app.storage.Users.Get(userID)
 	if err != nil {
 		if errors.Is(err, storage.ErrNoRecord) {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 		} else {
 			app.serverError(w, r, err)
 		}

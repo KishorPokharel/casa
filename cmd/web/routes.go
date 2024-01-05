@@ -24,10 +24,10 @@ func (app *application) routes() http.Handler {
 
 	anonymous := dynamic.Append(app.requireAnonymous)
 
-	r.Handler(http.MethodGet, "/register", anonymous.ThenFunc(app.handleRegisterPage))
-	r.Handler(http.MethodPost, "/register", anonymous.ThenFunc(app.handleUserRegister))
-	r.Handler(http.MethodGet, "/login", anonymous.ThenFunc(app.handleLoginPage))
-	r.Handler(http.MethodPost, "/login", anonymous.ThenFunc(app.handleLogin))
+	r.Handler(http.MethodGet, "/users/register", anonymous.ThenFunc(app.handleRegisterPage))
+	r.Handler(http.MethodPost, "/users/register", anonymous.ThenFunc(app.handleUserRegister))
+	r.Handler(http.MethodGet, "/users/login", anonymous.ThenFunc(app.handleLoginPage))
+	r.Handler(http.MethodPost, "/users/login", anonymous.ThenFunc(app.handleLogin))
 
 	// protected routes
 	protected := dynamic.Append(app.requireAuthentication)
@@ -35,7 +35,7 @@ func (app *application) routes() http.Handler {
 	r.Handler(http.MethodGet, "/listings", protected.ThenFunc(app.handleNewListingPage))
 	r.Handler(http.MethodPost, "/listings", protected.ThenFunc(app.handleNewListing))
 	r.Handler(http.MethodGet, "/profile", protected.ThenFunc(app.handleProfilePage))
-	r.Handler(http.MethodPost, "/logout", protected.ThenFunc(app.handleLogout))
+	r.Handler(http.MethodPost, "/users/logout", protected.ThenFunc(app.handleLogout))
 	r.Handler(http.MethodPost, "/listings/:id/save", protected.ThenFunc(app.handleSaveListing))
 	r.Handler(http.MethodDelete, "/listings/:id/unsave", protected.ThenFunc(app.handleUnsaveListing))
 

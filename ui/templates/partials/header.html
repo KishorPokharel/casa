@@ -6,13 +6,13 @@
   <ul>
     {{ if .IsAuthenticated }}
     <li>
-      <form action="/logout" method="post">
+      <form action="/users/logout" method="post">
         <button hidden id="logoutLink">Logout</button>
       </form>
     </li>
     {{ else }}
-    <li><a href="/login">Login</a></li>
-    <li><a href="/register">Register</a></li>
+    <li><a href="/users/login">Login</a></li>
+    <li><a href="/users/register">Register</a></li>
     {{ end }}
     <li><a href="/listings" role="button" class="outline">Post a Listing</a></li>
 
