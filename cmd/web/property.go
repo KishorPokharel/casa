@@ -229,7 +229,7 @@ func (app *application) handleSaveListing(w http.ResponseWriter, r *http.Request
 		}
 		return
 	}
-	redirectUrl := fmt.Sprintf("/listings/%d", p.ID)
+	redirectUrl := fmt.Sprintf("/listings/view/%d", p.ID)
 	err = app.storage.Property.Save(user.ID, p.ID)
 	if err != nil {
 		if errors.Is(err, storage.ErrDuplicateSave) {
@@ -269,7 +269,7 @@ func (app *application) handleUnsaveListing(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	redirectUrl := fmt.Sprintf("/listings/%d", p.ID)
+	redirectUrl := fmt.Sprintf("/listings/view/%d", p.ID)
 	err = app.storage.Property.Unsave(user.ID, p.ID)
 	if err != nil {
 		app.serverError(w, r, err)
