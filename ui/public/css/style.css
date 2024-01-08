@@ -3,6 +3,10 @@
   color: red;
 }
 
+.listings > .listing:only-child {
+  width: min(300px, 100%);
+}
+
 .listings {
   display: grid;
   gap: 2rem;
