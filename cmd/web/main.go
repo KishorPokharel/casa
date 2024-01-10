@@ -49,9 +49,12 @@ func main() {
 	sessionManager.Lifetime = 12 * time.Hour
 	app.sessionManager = sessionManager
 
-	// create upload dir if not exists
+	// create upload dir and tmp dir if not exists
 	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
 		os.Mkdir(uploadDir, os.ModePerm)
+	}
+	if _, err := os.Stat(tmpDir); os.IsNotExist(err) {
+		os.Mkdir(tmpDir, os.ModePerm)
 	}
 
 	if err := app.run(); err != nil {
