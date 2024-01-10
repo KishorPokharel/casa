@@ -1,6 +1,7 @@
 *.swp
 bin/
 .envrc
+tmp/
 tmp.txt
 uploads/
 seed/
