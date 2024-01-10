@@ -33,6 +33,7 @@ func (app *application) routes() http.Handler {
 	protected := dynamic.Append(app.requireAuthentication)
 
 	r.Handler(http.MethodGet, "/listings/create", protected.ThenFunc(app.handleNewListingPage))
+	r.Handler(http.MethodGet, "/listings/_create", protected.ThenFunc(app.handleNewListingPageWithFilepond))
 	r.Handler(http.MethodPost, "/listings/create", protected.ThenFunc(app.handleNewListing))
 	r.Handler(http.MethodGet, "/profile", protected.ThenFunc(app.handleProfilePage))
 	r.Handler(http.MethodPost, "/users/logout", protected.ThenFunc(app.handleLogout))

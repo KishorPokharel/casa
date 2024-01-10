@@ -139,6 +139,13 @@ func (app *application) handleNewListingPage(w http.ResponseWriter, r *http.Requ
 	app.render(w, r, http.StatusOK, page, data)
 }
 
+func (app *application) handleNewListingPageWithFilepond(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/property_create_filepond.html"
+	data := app.newTemplateData(r)
+	data.Form = propertyCreateForm{}
+	app.render(w, r, http.StatusOK, page, data)
+}
+
 func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {

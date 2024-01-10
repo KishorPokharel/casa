@@ -1,0 +1,91 @@
+{{ define "title" }}New{{ end }}
+
+{{ define "main" }}
+
+<section>
+    <div>
+      <h4>Create New Property Listing</h4>
+      <form action="/listings/create" method="post" enctype="multipart/form-data">
+      <div>
+        <label for="title">Title</label>
+        <input 
+          {{ with .Form.FieldErrors.title }}
+          aria-invalid="true"
+          {{ end }}
+          id="title" type="text" name="title" value="{{ .Form.Title }}">
+        {{ with .Form.FieldErrors.title }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="location">Location</label>
+        <input 
+          {{ with .Form.FieldErrors.location }}
+          aria-invalid="true"
+          {{ end }}
+        id="location" name="location" type="text" value="{{ .Form.Location }}">
+        {{ with .Form.FieldErrors.location }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="price">Price</label>
+        <input 
+          {{ with .Form.FieldErrors.price }}
+          aria-invalid="true"
+          {{ end }}
+        id="price" type="number" name="price" value="{{ .Form.Price }}">
+        {{ with .Form.FieldErrors.price }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="thumbnail">Thumbnail</label>
+        <input required id="thumbnail" type="file" name="thumbnail" accept="image/jpeg, image/png, image/jpg">
+      </div>
+      <div>
+        <label for="description">Description</label>
+        <textarea 
+          {{ with .Form.FieldErrors.description }}
+          aria-invalid="true"
+          {{ end }}
+          id="description" name="description">{{ .Form.Description }}</textarea>
+        {{ with .Form.FieldErrors.description }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="picture">Add More Pictures</label>
+        <input required multiple class="filepond" id="picture" type="file" name="picture" accept="image/jpeg, image/png, image/jpg">
+      </div>
+      <div>
+        <button type="submit">Create</button>
+      </div>
+    </form>
+  </div>
+</section>
+{{ end }}
+
+{{ define "styles" }}
+  <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+{{ end }}
+
+{{ define "scripts" }}
+  <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+  <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+
+  <script>
+    FilePond.registerPlugin(FilePondPluginFileValidateSize);
+    FilePond.registerPlugin(FilePondPluginFileValidateType);
+    const inputElement = document.querySelector('.filepond');
+    const pond = FilePond.create(inputElement, {
+      acceptedFileTypes: ['image/*'],
+      maxFileSize: "1MB",
+      maxTotalFileSize: "12MB",
+      server: {
+        process: "/upload/",
+      }
+    });
+  </script>
+{{ end }}
