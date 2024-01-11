@@ -11,7 +11,7 @@ require (
 	github.com/justinas/alice v1.2.0
 	github.com/leekchan/accounting v1.0.0
 	github.com/lib/pq v1.10.9
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 )
 
 require (
