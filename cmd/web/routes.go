@@ -32,11 +32,14 @@ func (app *application) routes() http.Handler {
 	// protected routes
 	protected := dynamic.Append(app.requireAuthentication)
 
-	r.Handler(http.MethodPost, "/pictures/upload", protected.ThenFunc(app.handleFileUpload))
+	r.Handler(http.MethodPost, "/thumbnail/upload", protected.ThenFunc(app.handleFileUpload("thumbnail")))
+	r.Handler(http.MethodPost, "/pictures/upload", protected.ThenFunc(app.handleFileUpload("picture")))
 
 	r.Handler(http.MethodGet, "/listings/create", protected.ThenFunc(app.handleNewListingPage))
 	r.Handler(http.MethodGet, "/listings/_create", protected.ThenFunc(app.handleNewListingPageWithFilepond))
 	r.Handler(http.MethodPost, "/listings/create", protected.ThenFunc(app.handleNewListing))
+	r.Handler(http.MethodPost, "/listings/_create", protected.ThenFunc(app.handleNewListingFilepond))
+
 	r.Handler(http.MethodGet, "/profile", protected.ThenFunc(app.handleProfilePage))
 	r.Handler(http.MethodPost, "/users/logout", protected.ThenFunc(app.handleLogout))
 	r.Handler(http.MethodPost, "/listings/save/:id", protected.ThenFunc(app.handleSaveListing))

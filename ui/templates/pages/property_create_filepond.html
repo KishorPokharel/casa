@@ -5,7 +5,7 @@
 <section>
     <div>
       <h4>Create New Property Listing</h4>
-      <form action="/listings/create" method="post" enctype="multipart/form-data">
+      <form action="/listings/_create" method="post" enctype="multipart/form-data">
       <div>
         <label for="title">Title</label>
         <input 
@@ -56,7 +56,7 @@
       </div>
       <div>
         <label for="picture">Add More Pictures</label>
-        <input required multiple class="filepond" id="picture" type="file" name="picture" accept="image/jpeg, image/png, image/jpg">
+        <input multiple class="filepond" id="picture" type="file" name="picture" accept="image/jpeg, image/png, image/jpg">
       </div>
       <div>
         <button type="submit">Create</button>
@@ -78,8 +78,16 @@
   <script>
     FilePond.registerPlugin(FilePondPluginFileValidateSize);
     FilePond.registerPlugin(FilePondPluginFileValidateType);
-    const inputElement = document.querySelector('.filepond');
-    const pond = FilePond.create(inputElement, {
+    const thumbnailInput = document.querySelector('input[name=thumbnail]');
+    const pictureInput = document.querySelector('input[name=picture]');
+    FilePond.create(thumbnailInput, {
+      acceptedFileTypes: ['image/*'],
+      maxFileSize: "2MB",
+      server: {
+        process: "/thumbnail/upload/",
+      }
+    });
+    FilePond.create(pictureInput, {
       acceptedFileTypes: ['image/*'],
       maxFileSize: "1MB",
       maxTotalFileSize: "12MB",
