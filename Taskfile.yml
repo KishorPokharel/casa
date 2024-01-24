@@ -1,5 +1,7 @@
 version: '3'
 
+silent: true
+
 dotenv: ['.envrc']
 
 tasks:
@@ -18,6 +20,12 @@ tasks:
       - go build -ldflags='-s' -o=./bin/casa ./cmd/web/*.go
 
   run:
+    desc: 'build and run the application'
+    cmds:
+      - task: build
+      - CASA_DB_DSN=$CASA_DB_DSN ./bin/casa
+
+  dev:
     desc: 'build run and watch'
     watch: true
     sources:
@@ -25,7 +33,7 @@ tasks:
     cmds:
       - task: build
       - clear
-      - CASA_DB_DSN=$CASA_DB_DSN ./bin/casa
+      - task: run
 
   clean:
     desc: 'clean build folder'
