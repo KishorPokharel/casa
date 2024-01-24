@@ -1,0 +1,33 @@
+version: '3'
+
+dotenv: ['.envrc']
+
+tasks:
+  default:
+    cmds:
+      - task -l
+
+  db:
+    desc: 'connect to db with psql'
+    cmds:
+      - psql $CASA_DB_DSN
+
+  build:
+    desc: 'build the application'
+    cmds:
+      - go build -ldflags='-s' -o=./bin/casa ./cmd/web/*.go
+
+  run:
+    desc: 'build run and watch'
+    watch: true
+    sources:
+      - '**/*.go'
+    cmds:
+      - task: build
+      - clear
+      - CASA_DB_DSN=$CASA_DB_DSN ./bin/casa
+
+  clean:
+    desc: 'clean build folder'
+    cmds:
+      - rm -rf bin
