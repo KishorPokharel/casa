@@ -31,7 +31,6 @@ tasks:
     sources:
       - '**/*.go'
     cmds:
-      - task: build
       - clear
       - task: run
 
