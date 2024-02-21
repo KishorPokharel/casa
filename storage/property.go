@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/lib/pq"
@@ -23,6 +24,24 @@ type Property struct {
 	CreatedAt   time.Time
 	Rank        float64
 	Saved       bool
+}
+
+type Property2 struct {
+	ID          int64
+	UserID      int64
+	Title       string
+	Description string
+	Banner      string
+	Location    string
+	Price       int64
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+
+	// Other Fields
+	Pictures []string
+	Username string
+	Rank     float64
+	Saved    bool
 }
 
 type PropertyStorage struct {
@@ -59,6 +78,68 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 		listings = append(listings, p)
 	}
 	return listings, nil
+}
+
+func (s *PropertyStorage) Insert2(property Property2) error {
+	tx, err := s.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	queryInsertListing := `
+      insert into listings
+      (title, user_id, description, banner, location, property_type, price)
+      values ($1, $2, $3, $4, $5, $6, $7)
+      returning id
+    `
+	args := []any{
+		property.Title,
+		property.UserID,
+		property.Description,
+		property.Banner,
+		property.Location,
+		"land",
+		property.Price,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var listingID int64
+	row := tx.QueryRowContext(ctx, queryInsertListing, args...)
+	if err := row.Scan(&listingID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if len(property.Pictures) > 0 {
+		queryInsertPictures := "insert into pictures (listing_id, url) values"
+		for i := range len(property.Pictures) {
+			if i != 0 {
+				queryInsertPictures += ","
+			}
+			queryInsertPictures += fmt.Sprintf(" ($1, $%d)", i+2)
+		}
+		stmt, err := tx.Prepare(queryInsertPictures)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		args := []any{listingID}
+		for _, picture := range property.Pictures {
+			args = append(args, picture)
+		}
+		_, err = stmt.ExecContext(ctx, args...)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *PropertyStorage) Insert(property Property) error {
