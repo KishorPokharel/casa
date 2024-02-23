@@ -34,7 +34,6 @@ create table if not exists listings (
 create table if not exists pictures (
     listing_id bigint references listings(id) not null,
     url text not null,
-    featured boolean not null default false,
     created_at timestamptz(0) not null default now(),
     deleted_at timestamptz(0)
 );
