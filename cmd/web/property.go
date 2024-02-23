@@ -152,7 +152,7 @@ func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.R
 		app.notFound(w, r)
 		return
 	}
-	p, err := app.storage.Property.Get(id)
+	p, err := app.storage.Property.GetByID(id)
 	if err != nil {
 		if errors.Is(err, storage.ErrNoRecord) {
 			app.notFound(w, r)

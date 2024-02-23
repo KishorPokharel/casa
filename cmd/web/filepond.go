@@ -137,7 +137,7 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 		}
 	}
 
-	property := storage.Property2{
+	property := storage.Property{
 		Banner:      form.Thumbnail,
 		Location:    form.Location,
 		Title:       form.Title,
@@ -147,7 +147,7 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 		Pictures:    form.Pictures,
 	}
 
-	err = app.storage.Property.Insert2(property)
+	err = app.storage.Property.Insert(property)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

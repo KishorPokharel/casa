@@ -34,21 +34,16 @@
   <br>
   <p>{{ .Listing.Description }}</p>
 
+  {{ if gt (len .Listing.Pictures) 0 }}
   <h5>More images of this listing</h5>
   <div class="listing-image-grid">
-    <a href="/uploads/banner_18ecfb59-fcdd-463b-bf50-6b2820512ceb.jpg" data-lightbox="listing-images">
-      <img src="/uploads/banner_18ecfb59-fcdd-463b-bf50-6b2820512ceb.jpg" alt="">
-    </a>
-    <a href="/uploads/banner_365b1801-5910-4a84-ba1e-71be01560400.jpg" data-lightbox="listing-images">
-      <img src="/uploads/banner_365b1801-5910-4a84-ba1e-71be01560400.jpg" alt="">
-    </a>
-    <a href="/uploads/banner_6a3bb9d8-6538-4aa4-965f-1de0a9f27f43.jpg" data-lightbox="listing-images">
-      <img src="/uploads/banner_6a3bb9d8-6538-4aa4-965f-1de0a9f27f43.jpg" alt="">
-    </a>
-    <a href="/uploads/banner_8099f557-58b5-4eb5-aad5-d644d74d470e.jpg" data-lightbox="listing-images">
-      <img src="/uploads/banner_8099f557-58b5-4eb5-aad5-d644d74d470e.jpg" alt="">
-    </a>
+    {{ range .Listing.Pictures }}
+    <a href="/uploads/{{.}}" data-lightbox="listing-images">
+      <img src="/uploads/{{.}}" alt="">
+      </a>
+    {{ end }}
   </div>
+  {{ end }}
 </section>
 
 {{ end }}

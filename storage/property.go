@@ -12,21 +12,21 @@ import (
 
 var ErrDuplicateSave = errors.New("listing is already saved")
 
-type Property struct {
-	ID          int64
-	UserID      int64
-	Banner      string
-	Location    string
-	Title       string
-	Description string
-	Price       int64
-	Username    string
-	CreatedAt   time.Time
-	Rank        float64
-	Saved       bool
-}
+// type Property struct {
+// 	ID          int64
+// 	UserID      int64
+// 	Banner      string
+// 	Location    string
+// 	Title       string
+// 	Description string
+// 	Price       int64
+// 	Username    string
+// 	CreatedAt   time.Time
+// 	Rank        float64
+// 	Saved       bool
+// }
 
-type Property2 struct {
+type Property struct {
 	ID          int64
 	UserID      int64
 	Title       string
@@ -80,7 +80,7 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 	return listings, nil
 }
 
-func (s *PropertyStorage) Insert2(property Property2) error {
+func (s *PropertyStorage) Insert(property Property) error {
 	tx, err := s.DB.Begin()
 	if err != nil {
 		return err
@@ -142,23 +142,23 @@ func (s *PropertyStorage) Insert2(property Property2) error {
 	return nil
 }
 
-func (s *PropertyStorage) Insert(property Property) error {
-	query := `
-      insert into listings
-      (title, user_id, description, banner, location, property_type, price)
-      values ($1, $2, $3, $4, $5, $6, $7)
-    `
-	args := []any{property.Title, property.UserID, property.Description, property.Banner, property.Location, "land", property.Price}
+// func (s *PropertyStorage) Insert(property Property) error {
+// 	query := `
+//       insert into listings
+//       (title, user_id, description, banner, location, property_type, price)
+//       values ($1, $2, $3, $4, $5, $6, $7)
+//     `
+// 	args := []any{property.Title, property.UserID, property.Description, property.Banner, property.Location, "land", property.Price}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
+// 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+// 	defer cancel()
 
-	_, err := s.DB.ExecContext(ctx, query, args...)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// 	_, err := s.DB.ExecContext(ctx, query, args...)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 	query := `
@@ -196,6 +196,53 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
 		listings = append(listings, p)
 	}
 	return listings, nil
+}
+
+func (s *PropertyStorage) GetByID(id int64) (Property, error) {
+	query := `
+        select
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.created_at, users.id, users.username
+        from
+            listings
+        join
+            users on listings.user_id = users.id
+        where listings.id = $1
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	row := s.DB.QueryRowContext(ctx, query, id)
+	p := Property{
+		Pictures: []string{},
+	}
+	err := row.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return p, ErrNoRecord
+		}
+		return p, err
+	}
+
+	queryPictures := `
+        select url from pictures
+        where listing_id = $1 and deleted_at is null
+    `
+
+	rows, err := s.DB.QueryContext(ctx, queryPictures, id)
+	if err != nil {
+		return p, err
+	}
+	for rows.Next() {
+		var imageURL string
+		if err := rows.Scan(&imageURL); err != nil {
+			return p, err
+		}
+		p.Pictures = append(p.Pictures, imageURL)
+
+	}
+	return p, nil
 }
 
 func (s *PropertyStorage) Get(id int64) (Property, error) {
