@@ -48,6 +48,17 @@ type PropertyStorage struct {
 	DB *sql.DB
 }
 
+func (s *PropertyStorage) ExistsWithID(id int64) (bool, error) {
+	query := "select exists( select true from listings where id = $1 )"
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var exists bool
+	err := s.DB.QueryRowContext(ctx, query, id).Scan(&exists)
+	return exists, err
+}
+
 func (s *PropertyStorage) GetAll() ([]Property, error) {
 	query := `
         select 
@@ -245,32 +256,32 @@ func (s *PropertyStorage) GetByID(id int64) (Property, error) {
 	return p, nil
 }
 
-func (s *PropertyStorage) Get(id int64) (Property, error) {
-	query := `
-        select
-            listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.created_at, users.id, users.username
-        from
-            listings
-        join
-            users on listings.user_id = users.id
-        where listings.id = $1
-    `
+// func (s *PropertyStorage) Get(id int64) (Property, error) {
+// 	query := `
+//         select
+//             listings.id, listings.title, listings.description, listings.banner, listings.location,
+//             listings.price, listings.created_at, users.id, users.username
+//         from
+//             listings
+//         join
+//             users on listings.user_id = users.id
+//         where listings.id = $1
+//     `
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
+// 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+// 	defer cancel()
 
-	row := s.DB.QueryRowContext(ctx, query, id)
-	p := Property{}
-	err := row.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return p, ErrNoRecord
-		}
-		return p, err
-	}
-	return p, nil
-}
+// 	row := s.DB.QueryRowContext(ctx, query, id)
+// 	p := Property{}
+// 	err := row.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+// 	if err != nil {
+// 		if errors.Is(err, sql.ErrNoRows) {
+// 			return p, ErrNoRecord
+// 		}
+// 		return p, err
+// 	}
+// 	return p, nil
+// }
 
 func (s *PropertyStorage) Save(userID, listingID int64) error {
 	query := `

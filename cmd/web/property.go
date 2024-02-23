@@ -203,6 +203,7 @@ func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request)
 		app.serverError(w, r, err)
 		return
 	}
+
 	data.Listings = listings
 	data.Form = queryForm{
 		Query: query,
@@ -216,15 +217,17 @@ func (app *application) handleSaveListing(w http.ResponseWriter, r *http.Request
 		app.notFound(w, r)
 		return
 	}
-	p, err := app.storage.Property.Get(id)
+
+	exists, err := app.storage.Property.ExistsWithID(id)
 	if err != nil {
-		if errors.Is(err, storage.ErrNoRecord) {
-			app.notFound(w, r)
-			return
-		}
 		app.serverError(w, r, err)
 		return
 	}
+	if !exists {
+		app.notFound(w, r)
+		return
+	}
+
 	// TODO: clean this
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
 	user, err := app.storage.Users.Get(userID)
@@ -236,8 +239,9 @@ func (app *application) handleSaveListing(w http.ResponseWriter, r *http.Request
 		}
 		return
 	}
-	redirectUrl := fmt.Sprintf("/listings/view/%d", p.ID)
-	err = app.storage.Property.Save(user.ID, p.ID)
+
+	redirectUrl := fmt.Sprintf("/listings/view/%d", id)
+	err = app.storage.Property.Save(user.ID, id)
 	if err != nil {
 		if errors.Is(err, storage.ErrDuplicateSave) {
 			app.sessionManager.Put(r.Context(), sessionFlashKey, "Listing Already Saved")
@@ -246,6 +250,7 @@ func (app *application) handleSaveListing(w http.ResponseWriter, r *http.Request
 		app.serverError(w, r, err)
 		return
 	}
+
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "Listing Saved")
 	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 }
@@ -256,15 +261,17 @@ func (app *application) handleUnsaveListing(w http.ResponseWriter, r *http.Reque
 		app.notFound(w, r)
 		return
 	}
-	p, err := app.storage.Property.Get(id)
+
+	exists, err := app.storage.Property.ExistsWithID(id)
 	if err != nil {
-		if errors.Is(err, storage.ErrNoRecord) {
-			app.notFound(w, r)
-			return
-		}
 		app.serverError(w, r, err)
 		return
 	}
+	if !exists {
+		app.notFound(w, r)
+		return
+	}
+
 	// TODO: clean this
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
 	user, err := app.storage.Users.Get(userID)
@@ -276,12 +283,14 @@ func (app *application) handleUnsaveListing(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	redirectUrl := fmt.Sprintf("/listings/view/%d", p.ID)
-	err = app.storage.Property.Unsave(user.ID, p.ID)
+
+	err = app.storage.Property.Unsave(user.ID, id)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
+
+	redirectUrl := fmt.Sprintf("/listings/view/%d", id)
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "Listing Unsaved")
 	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 }
