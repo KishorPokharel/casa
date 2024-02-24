@@ -96,7 +96,10 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 	form.CheckField(validator.NotBlank(form.Description), "description", "This field can not be blank")
 	form.CheckField(validator.NotBlank(form.Thumbnail), "thumbnail", "This field can not be blank")
 
-	// TODO: validate pictures array
+	// validate pictures array
+	for _, picture := range form.Pictures {
+		form.CheckField(validator.NotBlank(picture), "picture", "Invalid picture data")
+	}
 
 	if strings.TrimSpace(priceString) != "" {
 		price, err := strconv.Atoi(priceString)
