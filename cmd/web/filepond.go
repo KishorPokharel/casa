@@ -50,7 +50,12 @@ func (app *application) handleFileUpload(name string) func(w http.ResponseWriter
 
 		name := fmt.Sprintf("%s%s", uuid.NewString(), ext)
 		out, err := os.Create(filepath.Join(tmpDir, name))
+		if err != nil {
+			app.serverError(w, r, err)
+			return
+		}
 		defer out.Close()
+
 		_, err = out.Write(b)
 		if err != nil {
 			app.serverError(w, r, err)
