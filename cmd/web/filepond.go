@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -125,21 +126,28 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 		return
 	}
 
-	// move files from tmp to uploads directory
-
+	// move files from tmpDir to uploadDir
 	// move thumbnail image
-	oldImagePath := filepath.Clean(filepath.Join("./tmp/", form.Thumbnail))
-	newImagePath := filepath.Clean(filepath.Join("./uploads/", form.Thumbnail))
+	oldImagePath := filepath.Clean(filepath.Join(tmpDir, form.Thumbnail))
+	newImagePath := filepath.Clean(filepath.Join(uploadDir, form.Thumbnail))
 	if err := os.Rename(oldImagePath, newImagePath); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			app.clientError(w, http.StatusBadRequest)
+			return
+		}
 		app.serverError(w, r, err)
 		return
 	}
 
 	// move additional pictures
 	for _, picture := range form.Pictures {
-		oldImagePath := filepath.Clean(filepath.Join("./tmp/", picture))
-		newImagePath := filepath.Clean(filepath.Join("./uploads/", picture))
+		oldImagePath := filepath.Clean(filepath.Join(tmpDir, picture))
+		newImagePath := filepath.Clean(filepath.Join(uploadDir, picture))
 		if err := os.Rename(oldImagePath, newImagePath); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				app.clientError(w, http.StatusBadRequest)
+				return
+			}
 			app.serverError(w, r, err)
 			return
 		}
