@@ -5,6 +5,7 @@ go 1.22.0
 require (
 	github.com/alexedwards/scs/postgresstore v0.0.0-20231113091146-cef4b05350c8
 	github.com/alexedwards/scs/v2 v2.7.0
+	github.com/felixge/httpsnoop v1.0.4
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/google/uuid v1.4.0
 	github.com/julienschmidt/httprouter v1.3.0

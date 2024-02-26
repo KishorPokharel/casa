@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"database/sql"
+	"expvar"
 	"flag"
 	"log/slog"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/KishorPokharel/casa/storage"
@@ -56,6 +58,17 @@ func main() {
 	if _, err := os.Stat(tmpDir); os.IsNotExist(err) {
 		os.Mkdir(tmpDir, os.ModePerm)
 	}
+
+	// publish stats
+	expvar.Publish("goroutines", expvar.Func(func() any {
+		return runtime.NumGoroutine()
+	}))
+	expvar.Publish("database", expvar.Func(func() any {
+		return db.Stats()
+	}))
+	expvar.Publish("timestamp", expvar.Func(func() any {
+		return time.Now().Unix()
+	}))
 
 	if err := app.run(); err != nil {
 		app.logger.Error(err.Error())

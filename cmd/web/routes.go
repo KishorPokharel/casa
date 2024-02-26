@@ -1,6 +1,7 @@
 package main
 
 import (
+	"expvar"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -13,6 +14,8 @@ func (app *application) routes() http.Handler {
 	// serve static files
 	r.ServeFiles("/public/*filepath", http.Dir(publicDir))
 	r.ServeFiles("/uploads/*filepath", http.Dir(uploadDir))
+
+	r.Handler(http.MethodGet, "/debug/vars", expvar.Handler())
 
 	dynamic := alice.New(app.sessionManager.LoadAndSave, app.authenticate)
 
@@ -45,6 +48,6 @@ func (app *application) routes() http.Handler {
 	r.Handler(http.MethodPost, "/listings/save/:id", protected.ThenFunc(app.handleSaveListing))
 	r.Handler(http.MethodDelete, "/listings/unsave/:id", protected.ThenFunc(app.handleUnsaveListing))
 
-	standard := alice.New(app.methodOverride, app.requestID, app.logRequest)
+	standard := alice.New(app.metrics, app.methodOverride, app.requestID, app.logRequest)
 	return standard.Then(r)
 }
