@@ -24,11 +24,11 @@ create table if not exists listings (
     title text not null,
     description text not null,
     banner text not null,
-    pictures text[],
     location text not null,
     property_type text not null check (property_type in ('apartment', 'land', 'house')),
     price int not null,
-    created_at timestamp(0) with time zone not null default now()
+    created_at timestamp(0) with time zone not null default now(),
+    updated_at timestamptz(0)
 );
 
 create table if not exists pictures (
