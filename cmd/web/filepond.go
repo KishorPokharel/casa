@@ -128,8 +128,9 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 
 	// move files from tmpDir to uploadDir
 	// move thumbnail image
-	oldImagePath := filepath.Clean(filepath.Join(tmpDir, form.Thumbnail))
-	newImagePath := filepath.Clean(filepath.Join(uploadDir, form.Thumbnail))
+	thumbnail := filepath.Base(form.Thumbnail)
+	oldImagePath := filepath.Join(tmpDir, thumbnail)
+	newImagePath := filepath.Join(uploadDir, thumbnail)
 	if err := os.Rename(oldImagePath, newImagePath); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			app.clientError(w, http.StatusBadRequest)
@@ -141,8 +142,9 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 
 	// move additional pictures
 	for _, picture := range form.Pictures {
-		oldImagePath := filepath.Clean(filepath.Join(tmpDir, picture))
-		newImagePath := filepath.Clean(filepath.Join(uploadDir, picture))
+		picture = filepath.Base(picture)
+		oldImagePath := filepath.Join(tmpDir, picture)
+		newImagePath := filepath.Join(uploadDir, picture)
 		if err := os.Rename(oldImagePath, newImagePath); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
 				app.clientError(w, http.StatusBadRequest)
