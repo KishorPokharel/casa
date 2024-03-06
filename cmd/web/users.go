@@ -261,3 +261,60 @@ func (app *application) handleProfileEdit(w http.ResponseWriter, r *http.Request
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "Profile Updated")
 	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 }
+
+type passwordChangeForm struct {
+	CurrentPassword    string
+	NewPassword        string
+	ConfirmNewPassword string
+	validator.Validator
+}
+
+func (app *application) handleChangePasswordPage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/password_change.html"
+	data := app.newTemplateData(r)
+	data.Form = passwordChangeForm{}
+	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handleChangePassword(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	form := passwordChangeForm{
+		CurrentPassword:    r.FormValue("currentPassword"),
+		NewPassword:        r.FormValue("newPassword"),
+		ConfirmNewPassword: r.FormValue("confirmNewPassword"),
+	}
+
+	form.CheckField(validator.NotBlank(form.CurrentPassword), "currentPassword", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.NewPassword), "newPassword", "This field cannot be blank")
+	form.CheckField(validator.MinChars(form.NewPassword, 10), "newPassword", "This field must be at least 10 characters long")
+	form.CheckField(validator.NotBlank(form.ConfirmNewPassword), "confirmNewPassword", "This field cannot be blank")
+	form.CheckField(form.NewPassword == form.ConfirmNewPassword, "confirmNewPassword", "Passwords do not match")
+
+	page := "./ui/templates/pages/password_change.html"
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		return
+	}
+
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	if err := app.storage.Users.PasswordUpdate(userID, form.CurrentPassword, form.NewPassword); err != nil {
+		if errors.Is(err, storage.ErrInvalidCredentials) {
+			form.AddFieldError("currentPassword", "Current password is incorrect")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		} else if err != nil {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Password Changed")
+	http.Redirect(w, r, "/profile", http.StatusSeeOther)
+}

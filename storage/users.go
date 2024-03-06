@@ -161,3 +161,32 @@ func (s *UserStorage) Get(id int64) (User, error) {
 
 	return user, nil
 }
+
+func (m *UserStorage) PasswordUpdate(id int64, currentPassword, newPassword string) error {
+
+	var currentHashedPassword []byte
+	query := "select password_hash from users where id = $1"
+	err := m.DB.QueryRow(query, id).Scan(&currentHashedPassword)
+	if err != nil {
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword(currentHashedPassword, []byte(currentPassword))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return ErrInvalidCredentials
+		} else {
+			return err
+		}
+	}
+
+	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), 12)
+	if err != nil {
+		return err
+	}
+
+	query = "update users set password_hash = $1 WHERE id = $2"
+	_, err = m.DB.Exec(query, string(newHashedPassword), id)
+
+	return err
+}
