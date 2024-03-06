@@ -22,13 +22,11 @@ func (app *application) handleHomePage(w http.ResponseWriter, r *http.Request) {
 }
 
 type propertyCreateForm struct {
-	// ListingType   string
-	// PropertyType  string
-	Title string
-	// Province      string
-	Location string
-	Price    int64
-	ImageURL string
+	PropertyType string
+	Title        string
+	Location     string
+	Price        int64
+	ImageURL     string
 	// FurnishStatus string
 	Description string
 	validator.Validator

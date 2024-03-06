@@ -27,15 +27,16 @@ var ErrDuplicateSave = errors.New("listing is already saved")
 // }
 
 type Property struct {
-	ID          int64
-	UserID      int64
-	Title       string
-	Description string
-	Banner      string
-	Location    string
-	Price       int64
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID           int64
+	UserID       int64
+	Title        string
+	Description  string
+	PropertyType string
+	Banner       string
+	Location     string
+	Price        int64
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 
 	// Other Fields
 	Pictures []string
@@ -109,7 +110,7 @@ func (s *PropertyStorage) Insert(property Property) error {
 		property.Description,
 		property.Banner,
 		property.Location,
-		"land",
+		property.PropertyType,
 		property.Price,
 	}
 

@@ -29,6 +29,16 @@
         {{ end }}
       </div>
       <div>
+        <label for="">Type of Property</label>
+        <select id="" name="propertyType">
+          <option value="land">Land</option>
+          <option value="house">House</option>
+        </select>
+        {{ with .Form.FieldErrors.propertyType }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
         <label for="price">Price</label>
         <input 
           {{ with .Form.FieldErrors.price }}
@@ -56,7 +66,10 @@
       </div>
       <div>
         <label for="picture">Add More Pictures</label>
-        <input multiple class="filepond" id="picture" type="file" name="picture" accept="image/jpeg, image/png, image/jpg">
+        <input required multiple class="filepond" id="picture" type="file" name="picture" accept="image/jpeg, image/png, image/jpg">
+        {{ with .Form.FieldErrors.picture }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
       </div>
       <div>
         <button type="submit">Create</button>

@@ -67,14 +67,17 @@ func (app *application) handleFileUpload(name string) func(w http.ResponseWriter
 }
 
 type propertyCreateForm2 struct {
-	Title       string
-	Location    string
-	Price       int64
-	Thumbnail   string
-	Pictures    []string
-	Description string
+	Title        string
+	PropertyType string
+	Location     string
+	Price        int64
+	Thumbnail    string
+	Pictures     []string
+	Description  string
 	validator.Validator
 }
+
+var propertyTypes = []string{"land", "house"}
 
 func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.Request) {
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
@@ -87,11 +90,12 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 	}
 
 	form := propertyCreateForm2{
-		Title:       r.FormValue("title"),
-		Location:    r.FormValue("location"),
-		Thumbnail:   r.FormValue("thumbnail"),
-		Description: r.FormValue("description"),
-		Pictures:    r.Form["picture"],
+		Title:        r.FormValue("title"),
+		PropertyType: r.FormValue("propertyType"),
+		Location:     r.FormValue("location"),
+		Thumbnail:    r.FormValue("thumbnail"),
+		Description:  r.FormValue("description"),
+		Pictures:     r.Form["picture"],
 	}
 	priceString := r.FormValue("price")
 
@@ -101,6 +105,7 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 	form.CheckField(validator.NotBlank(form.Location), "location", "This field can not be blank")
 	form.CheckField(validator.NotBlank(form.Description), "description", "This field can not be blank")
 	form.CheckField(validator.NotBlank(form.Thumbnail), "thumbnail", "This field can not be blank")
+	form.CheckField(validator.PermittedValue(form.PropertyType, propertyTypes...), "propertyType", "Invalid property type")
 
 	// validate pictures array
 	for _, picture := range form.Pictures {
@@ -156,13 +161,14 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 	}
 
 	property := storage.Property{
-		Banner:      form.Thumbnail,
-		Location:    form.Location,
-		Title:       form.Title,
-		Description: form.Description,
-		Price:       form.Price,
-		UserID:      userID,
-		Pictures:    form.Pictures,
+		Banner:       form.Thumbnail,
+		Location:     form.Location,
+		Title:        form.Title,
+		Description:  form.Description,
+		PropertyType: form.PropertyType,
+		Price:        form.Price,
+		UserID:       userID,
+		Pictures:     form.Pictures,
 	}
 
 	err = app.storage.Property.Insert(property)
