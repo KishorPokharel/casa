@@ -284,3 +284,55 @@ func (app *application) handleUnsaveListing(w http.ResponseWriter, r *http.Reque
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "Listing Unsaved")
 	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 }
+
+func (app *application) handleSavedListingsPage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/my_saved.html"
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	data := app.newTemplateData(r)
+	data.User = user
+
+	// get my saved listings
+	savedListings, err := app.storage.Property.GetSavedListings(userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data.SavedListings = savedListings
+
+	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handleMyListingsPage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/my_listings.html"
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	data := app.newTemplateData(r)
+	data.User = user
+
+	// get my listings
+	listings, err := app.storage.Property.GetAllForUser(userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data.Listings = listings
+
+	app.render(w, r, http.StatusOK, page, data)
+}
