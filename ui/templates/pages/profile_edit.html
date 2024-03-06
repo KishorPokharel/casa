@@ -4,14 +4,23 @@
 
 <section>
   <h4>Edit Your Profile</h4>
-  <form>
+  <form action="/profile/update" method="post">
+    <div>
+      <input type="hidden" name="_method" value="PUT">
+    </div>
     <div>
       <label for="">Username</label>
-      <input type="text" value="{{.User.Username}}" >
+      <input required name="username" type="text" value="{{.Form.Username}}" >
+      {{ with .Form.FieldErrors.username }}
+      <small class="red">{{ . }}</small>
+      {{ end }}
     </div>
     <div>
       <label for="">Phone</label>
-      <input type="text" value="{{.User.Phone}}" >
+      <input name="phone" type="text" value="{{.Form.Phone}}" >
+      {{ with .Form.FieldErrors.phone }}
+      <small class="red">{{ . }}</small>
+      {{ end }}
     </div>
     <div>
       <input type="submit" value="Update">

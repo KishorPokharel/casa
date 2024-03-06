@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/KishorPokharel/casa/storage"
 	"github.com/KishorPokharel/casa/validator"
@@ -201,5 +202,62 @@ func (app *application) handleProfileEditPage(w http.ResponseWriter, r *http.Req
 	}
 	data := app.newTemplateData(r)
 	data.User = user
+	data.Form = userEditForm{
+		Username: user.Username,
+		Phone:    user.Phone,
+	}
 	app.render(w, r, http.StatusOK, page, data)
+}
+
+type userEditForm struct {
+	Username string
+	Phone    string
+	validator.Validator
+}
+
+func (app *application) handleProfileEdit(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	phone := strings.TrimSpace(r.FormValue("phone"))
+	form := userEditForm{
+		Username: r.FormValue("username"),
+		Phone:    phone,
+	}
+	form.CheckField(validator.NotBlank(form.Username), "username", "This field can not be blank")
+	form.CheckField(validator.MaxChars(form.Username, 20), "username", "This field can not be more than 20 chars")
+	// TODO: validate phone number
+	if form.Phone != "" {
+		form.CheckField(len(form.Phone) == 10, "phone", "Phone must be 10 digits")
+	}
+
+	page := "./ui/templates/pages/profile_edit.html"
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		return
+	}
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	user.Username = form.Username
+	user.Phone = form.Phone
+	if err := app.storage.Users.Update(user.ID, user); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Profile Updated")
+	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 }

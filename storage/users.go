@@ -85,6 +85,24 @@ func (s *UserStorage) Insert(user User) error {
 	return nil
 }
 
+func (s *UserStorage) Update(id int64, user User) error {
+	query := `
+      update users set username = $1, phone = $2
+      where id = $3
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	args := []any{user.Username, user.Phone, id}
+	_, err := s.DB.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *UserStorage) Authenticate(email, password string) (int64, error) {
 	query := `select id, password_hash
       from users where email = $1
