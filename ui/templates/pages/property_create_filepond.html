@@ -18,15 +18,19 @@
         {{ end }}
       </div>
       <div>
-        <label for="location">Location</label>
+        <label for="locationInput">Location</label>
         <input 
           {{ with .Form.FieldErrors.location }}
           aria-invalid="true"
           {{ end }}
-        id="location" name="location" type="text" value="{{ .Form.Location }}">
+        id="locationInput" name="location" type="text" value="{{ .Form.Location }}">
         {{ with .Form.FieldErrors.location }}
         <small class="red">{{ . }}</small>
         {{ end }}
+        <div class="locationResultsContainer">
+          <ul id="locationResults">
+          </ul>
+        </div>
       </div>
       <div>
         <label for="">Type of Property</label>
@@ -109,4 +113,5 @@
       }
     });
   </script>
+  <script src="/public/js/location.js"></script>
 {{ end }}

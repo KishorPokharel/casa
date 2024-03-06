@@ -79,3 +79,7 @@
 .info {
   color: #fff;
 }
+
+#locationResults li {
+  cursor: pointer;
+}
