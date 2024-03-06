@@ -1,0 +1,22 @@
+{{ define "title" }}Profile{{ end }}
+
+{{ define "main" }}
+
+<section>
+  <h4>Edit Your Profile</h4>
+  <form>
+    <div>
+      <label for="">Username</label>
+      <input type="text" value="{{.User.Username}}" >
+    </div>
+    <div>
+      <label for="">Phone</label>
+      <input type="text" value="{{.User.Phone}}" >
+    </div>
+    <div>
+      <input type="submit" value="Update">
+    </div>
+  </form>
+</section>
+
+{{ end }}

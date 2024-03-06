@@ -186,3 +186,20 @@ func (app *application) handleProfilePage(w http.ResponseWriter, r *http.Request
 
 	app.render(w, r, http.StatusOK, page, data)
 }
+
+func (app *application) handleProfileEditPage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/profile_edit.html"
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	data := app.newTemplateData(r)
+	data.User = user
+	app.render(w, r, http.StatusOK, page, data)
+}

@@ -14,7 +14,14 @@
 <!-- SEARCH -->
 <div>
   <form action="/search" method="get">
-    <input autofocus type="search" name="query" placeholder="Enter a location">
+    <input autofocus list="locations" type="search" name="query" placeholder="Enter a location">
+    <datalist id="locations">
+      <option value="biratnagar">
+      <option value="jhapa">
+      <option value="dharan">
+      <option value="itahari">
+      <option value="saptari">
+    </datalist>
   </form>
 </div>
 <!-- END SEARCH -->

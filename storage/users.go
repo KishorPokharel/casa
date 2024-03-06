@@ -21,6 +21,7 @@ type User struct {
 	ID        int64
 	Username  string
 	Email     string
+	Phone     string
 	Password  password
 	CreatedAt time.Time
 }
@@ -122,16 +123,22 @@ func (s *UserStorage) Exists(id int64) (bool, error) {
 }
 
 func (s *UserStorage) Get(id int64) (User, error) {
-	query := `select id, username, email, created_at from users where id = $1`
+	query := `select id, username, email, phone, created_at from users where id = $1`
 
 	var user User
-	err := s.DB.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Email, &user.CreatedAt)
+	var phone sql.Null[string]
+	err := s.DB.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Email, &phone, &user.CreatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return User{}, ErrNoRecord
 		} else {
 			return User{}, err
 		}
+	}
+	if phone.Valid {
+		user.Phone = phone.V
+	} else {
+		user.Phone = ""
 	}
 
 	return user, nil

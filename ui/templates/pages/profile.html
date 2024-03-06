@@ -13,11 +13,18 @@
       <label for="">Email</label>
       <input type="text" value="{{.User.Email}}" readonly>
     </div>
+    {{ if .User.Phone }}
+    <div>
+      <label for="">Phone</label>
+      <input type="text" value="{{.User.Phone}}" readonly>
+    </div>
+    {{ end }}
     <div>
       <label for="">Joined At</label>
       <input type="text" value="{{humanDate .User.CreatedAt}}" readonly>
     </div>
   </form>
+  <a href="/profile/update" role="button" class="outline">Edit Profile</a>
 </section>
 
 <section>
