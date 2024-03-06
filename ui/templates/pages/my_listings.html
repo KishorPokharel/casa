@@ -4,6 +4,9 @@
 
 <section>
   <h4>Your Listings</h4>
+  {{ if eq (len .Listings) 0 }}
+  <p>Nothing to see here. Maybe <a href="/listings/create">post your listing?</a></p>
+  {{ else }}
   <div class="listings listings--saved">
   {{ range .Listings }}
   <div class="listing listing__{{.ID}}">
@@ -25,6 +28,7 @@
     </div>
   {{ end }}
   </div>
+  {{ end }}
 </section>
 
 {{ end }}
