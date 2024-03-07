@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
+	"strconv"
+	"strings"
 
 	"github.com/KishorPokharel/casa/storage"
 	"github.com/KishorPokharel/casa/validator"
@@ -182,23 +185,69 @@ func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.R
 }
 
 type queryForm struct {
-	Query string
+	Location     string
+	PropertyType string
+	MinPrice     int64
+	MaxPrice     int64
+	validator.Validator
 }
 
 func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/search.html"
-	data := app.newTemplateData(r)
-	query := r.URL.Query().Get("query")
-	listings, err := app.storage.Property.Search(query)
+	// query := strings.TrimSpace(r.URL.Query().Get("query"))
+	minPriceString := strings.TrimSpace(r.URL.Query().Get("minPrice"))
+	maxPriceString := strings.TrimSpace(r.URL.Query().Get("maxPrice"))
+
+	form := queryForm{
+		Location:     strings.TrimSpace(r.URL.Query().Get("query")),
+		PropertyType: strings.TrimSpace(r.URL.Query().Get("propertyType")),
+	}
+
+	permitted := slices.Concat([]string{"", "any"}, propertyTypes)
+	form.CheckField(validator.PermittedValue(form.PropertyType, permitted...), "propertyType", "Invalid property type")
+	if minPriceString != "" {
+		minPrice, err := strconv.Atoi(minPriceString)
+		if err != nil {
+			form.CheckField(false, "minPrice", "Invalid input")
+		} else {
+			form.MinPrice = int64(minPrice)
+			form.CheckField(form.MinPrice > 0, "minPrice", "Min Price should be smaller than Max Price")
+		}
+	}
+	if maxPriceString != "" {
+		maxPrice, err := strconv.Atoi(maxPriceString)
+		if err != nil {
+			form.CheckField(false, "maxPrice", "Invalid input")
+		} else {
+			form.MaxPrice = int64(maxPrice)
+			form.CheckField(form.MaxPrice > 0, "minPrice", "Min Price should be smaller than Max Price")
+		}
+	}
+	if minPriceString != "" && maxPriceString != "" {
+		form.CheckField(form.MinPrice < form.MaxPrice, "minPrice", "Min Price should be smaller than Max Price")
+	}
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		return
+	}
+
+	filter := storage.PropertyFilter{
+		Location:     form.Location,
+		PropertyType: form.PropertyType,
+		MinPrice:     form.MinPrice,
+		MaxPrice:     form.MaxPrice,
+	}
+	listings, err := app.storage.Property.Search2(filter)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
+	data := app.newTemplateData(r)
+	data.Form = form
 	data.Listings = listings
-	data.Form = queryForm{
-		Query: query,
-	}
 	app.render(w, r, http.StatusOK, page, data)
 }
 

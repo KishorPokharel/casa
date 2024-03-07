@@ -4,14 +4,46 @@
 
 <section>
   <h4>Search For Property Here</h4>
-
   <form action="/search" method="get">
-    <input autofocus type="search" name="query" placeholder="Enter a location" value="{{ .Form.Query }}">
+    <input autofocus type="text" name="query" placeholder="Enter a location" value="{{ .Form.Location }}">
+    <fieldset class="grid">
+      <div>
+        <label for="">Property Type</label>
+        <select id="" name="propertyType">
+          <option {{ if eq .Form.PropertyType "" }} selected {{ end }} value="">Any</option>
+          <option {{ if eq .Form.PropertyType "land" }} selected {{ end }} value="land">Land</option>
+          <option {{ if eq .Form.PropertyType "house" }} selected {{ end }} value="house">House</option>
+        </select>
+      </div>
+      <div>
+        <label for="">Min Price</label>
+        <input type="number" name="minPrice">
+        {{ with .Form.FieldErrors.minPrice }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="">Max Price</label>
+        <input type="number" name="maxPrice">
+        {{ with .Form.FieldErrors.maxPrice }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+    </fieldset>
+    <a href="#" id="resetPriceBtn">Reset Price</a>
+    <br>
+    <br>
+    <div>
+      <input type="submit" value="Search">
+    </div>
   </form>
 
   {{ if eq (len .Listings) 0 }}
   <p>No Listings</p>
-  {{ end }}
+  {{ else }}
+  <small>{{ len .Listings }} result(s)</small>
+  <br>
+  <br>
   <div class="listings">
   {{ range .Listings }}
   <div class="listing listing__{{.ID}}">
@@ -33,6 +65,20 @@
   </div>
   {{ end }}
   </div>
+  {{ end }}
 </section>
 {{ end }}
 
+{{ define "scripts" }}
+<script>
+  const resetPriceBtn = document.querySelector("#resetPriceBtn");
+  const minPriceInput = document.querySelector("input[name=minPrice]");
+  const maxPriceInput = document.querySelector("input[name=maxPrice]");
+
+  resetPriceBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    minPriceInput.value = "";
+    maxPriceInput.value = "";
+  });
+</script>
+{{ end }}

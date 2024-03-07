@@ -47,6 +47,13 @@ type Property struct {
 	Saved    bool
 }
 
+type PropertyFilter struct {
+	Location     string
+	PropertyType string
+	MinPrice     int64
+	MaxPrice     int64
+}
+
 type PropertyStorage struct {
 	DB *sql.DB
 }
@@ -193,6 +200,47 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
         order by rank desc
     `
 	args := []any{searchQuery}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	rows, err := s.DB.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	listings := []Property{}
+	for rows.Next() {
+		p := Property{}
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username, &p.Rank)
+		if err != nil {
+			return nil, err
+		}
+		listings = append(listings, p)
+	}
+	return listings, nil
+}
+
+func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
+	query := `
+        select
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.created_at, users.id, users.username,
+            ts_rank(to_tsvector('simple', listings.location), plainto_tsquery($1)) * 3 +
+            ts_rank(to_tsvector('simple', listings.title), plainto_tsquery($1)) * 2 +
+            ts_rank(to_tsvector('simple', listings.description), plainto_tsquery($1)) * 1 as rank
+        from
+            listings
+        join
+            users on listings.user_id = users.id
+        where
+            (to_tsvector('simple', location || ' ' || description || ' ' || title) @@ plainto_tsquery('simple', $1) or $1='')
+        and
+            (listings.property_type = $2 or $2='')
+        order by rank desc
+    `
+	fmt.Println(filter)
+	args := []any{filter.Location, filter.PropertyType}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
