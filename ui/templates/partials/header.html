@@ -1,7 +1,12 @@
 {{ define "header" }}
 <nav style="margin-bottom: 2rem">
   <ul>
-    <li><a href="/"><strong>Casa</strong></a></li>
+    <li>
+      <a style="display: flex; gap: 5px; align-items: center;" href="/">
+        <img src="/public/images/gopher.jpeg" alt="">
+        <strong>Casa</strong>
+      </a>
+    </li>
   </ul>
   <ul>
     {{ if .IsAuthenticated }}

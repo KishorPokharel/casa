@@ -24,10 +24,19 @@
         {{ end }}
         {{ template "main" . }}
       </main>
+      <!-- FOOTER -->
       <footer>
       <hr>
-      <p>Copyright &copy; {{ .CurrentYear }}</p>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <img
+          src="/public/images/pilot-bust.svg"
+          style="display: block"
+          width="100px"
+          alt="" />
+        <span>Copyright &copy; {{ .CurrentYear }} Casa Inc.</span>
+      </div>
       </footer>
+      <!-- END FOOTER -->
     </div>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.4/dist/js/lightbox.min.js"></script>
