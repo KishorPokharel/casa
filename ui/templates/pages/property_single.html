@@ -14,17 +14,22 @@
     <h3>{{ .Listing.Title }}</h3>
     <p>{{ formatPrice .Listing.Price }} | {{ .Listing.Location }}</p>
   </hgroup>
+
   <div class="meta">
     <span>{{ humanDate .Listing.CreatedAt }} | Posted by <a href="#">{{ .Listing.Username }}</a></span>
     {{ if ne .User.ID .Listing.UserID }}
+    <a onclick="messageBtn.click()" href="#">Message Owner</a>
+    <form hidden action="/message/{{.Listing.UserID}}" method="post">
+      <button id="messageBtn" hidden type="submit">Message Owner</button>
+    </form>
     {{ if .Listing.Saved }}
-    <a onclick="saveBtn.click()" class="" href="#">unsave</a>
+    <a onclick="saveBtn.click()" href="#">Unsave</a>
     <form action="/listings/unsave/{{.Listing.ID}}" method="post">
       <input type="hidden" name="_method" value="DELETE">
       <button id="saveBtn" hidden type="submit">Unsave</button>
     </form>
     {{ else }}
-    <a onclick="saveBtn.click()" class="" href="#">save</a>
+    <a onclick="saveBtn.click()" href="#">Save</a>
     <form action="/listings/save/{{.Listing.ID}}" method="post">
       <button id="saveBtn" hidden type="submit">Save</button>
     </form>
@@ -39,6 +44,7 @@
   <br>
   <p>{{ .Listing.Description }}</p>
 
+  <!-- MORE IMAGES -->
   {{ if gt (len .Listing.Pictures) 0 }}
   <h5>More images of this listing</h5>
   <div class="listing-image-grid">
@@ -48,12 +54,16 @@
       </a>
     {{ end }}
   </div>
+  {{ end }}
+  <!-- END MORE IMAGES -->
+
   <hr>
+  <!-- MAP SECTION -->
   <section>
     <p>Map of the location provided by owner</p>
     <div id="my-map" style="width: 100%; height: 400px"></div>
   </section>
-  {{ end }}
+  <!-- END MAP SECTION -->
 </section>
 
 {{ end }}
