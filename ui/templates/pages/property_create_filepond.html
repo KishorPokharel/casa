@@ -32,6 +32,17 @@
           </ul>
         </div>
       </div>
+      <fieldset class="grid">
+        <div>
+        <label for="lat">Latitude</label>
+        <input required type="text" id="latitudeInput">
+        </div>
+        <div>
+        <label for="lat">Longitude</label>
+        <input required type="text" id="longitudeInput">
+        </div>
+      </fieldset>
+      <fieldset class="grid">
       <div>
         <label for="">Type of Property</label>
         <select id="" name="propertyType">
@@ -53,13 +64,14 @@
         <small class="red">{{ . }}</small>
         {{ end }}
       </div>
+      </fieldset>
       <div>
         <label for="thumbnail">Thumbnail</label>
         <input required id="thumbnail" type="file" name="thumbnail" accept="image/jpeg, image/png, image/jpg">
       </div>
       <div>
         <label for="description">Description</label>
-        <textarea 
+        <textarea style="min-height: 200px"
           {{ with .Form.FieldErrors.description }}
           aria-invalid="true"
           {{ end }}

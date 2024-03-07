@@ -2,6 +2,8 @@ const locationInput = document.querySelector('#locationInput');
 const locationResultsContainer = document.querySelector('.locationResultsContainer');
 const locationResults = document.querySelector('#locationResults');
 const locationBoxes = document.querySelectorAll('.location');
+const latitudeInput = document.querySelector("#latitudeInput");
+const longitudeInput = document.querySelector("#longitudeInput");
 
 locationBoxes.forEach(box => {
   box.addEventListener("click", (e) => {
@@ -29,6 +31,7 @@ function handleLocationInputChange(e) {
         let html = "";
         for (let result of results.features) {
           html += template(result.properties);
+          console.log(result.properties);
         }
         locationResults.innerHTML = html;
 
@@ -38,6 +41,8 @@ function handleLocationInputChange(e) {
           box.addEventListener("click", (e) => {
             const target = e.target;
             locationInput.value = target.dataset.text;
+            latitudeInput.value = target.dataset.lat;
+            longitudeInput.value = target.dataset.lon;
             locationResults.innerHTML = "";
           });
         });
@@ -50,7 +55,9 @@ function handleLocationInputChange(e) {
 
 function template(result) {
   return `
-    <li class="location" data-text="${result.formatted}">${result.formatted}</li>
+    <li class="location" data-text="${result.formatted}" data-lat="${result.lat}" data-lon="${result.lon}">
+    ${result.formatted}
+    </li>
   `
 }
 
