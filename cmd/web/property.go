@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -335,4 +336,17 @@ func (app *application) handleMyListingsPage(w http.ResponseWriter, r *http.Requ
 	data.Listings = listings
 
 	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handleGetAllLocations(w http.ResponseWriter, r *http.Request) {
+	locations, err := app.storage.Property.GetAllLocations()
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data := map[string]any{
+		"locations": locations,
+	}
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
 }

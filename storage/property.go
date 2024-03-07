@@ -422,3 +422,28 @@ func (s *PropertyStorage) GetAllForUser(userID int64) ([]Property, error) {
 	}
 	return listings, nil
 }
+
+func (s *PropertyStorage) GetAllLocations() ([]string, error) {
+	query := `
+        select distinct location from listings
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	rows, err := s.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	locations := []string{}
+	for rows.Next() {
+		var location string
+		err := rows.Scan(&location)
+		if err != nil {
+			return nil, err
+		}
+		locations = append(locations, location)
+	}
+	return locations, nil
+}
