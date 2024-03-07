@@ -237,10 +237,12 @@ func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
             (to_tsvector('simple', location || ' ' || description || ' ' || title) @@ plainto_tsquery('simple', $1) or $1='')
         and
             (listings.property_type = $2 or $2='')
+        and
+            ((listings.price >= $3 and listings.price <= $3) or ($3 = 0 and $4 = 0))
         order by rank desc
     `
 	fmt.Println(filter)
-	args := []any{filter.Location, filter.PropertyType}
+	args := []any{filter.Location, filter.PropertyType, filter.MinPrice, filter.MaxPrice}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
