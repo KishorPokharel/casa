@@ -211,7 +211,7 @@ func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request)
 			form.CheckField(false, "minPrice", "Invalid input")
 		} else {
 			form.MinPrice = int64(minPrice)
-			form.CheckField(form.MinPrice > 0, "minPrice", "Min Price should be smaller than Max Price")
+			form.CheckField(form.MinPrice >= 0, "minPrice", "Value must be greater or equal to 0")
 		}
 	}
 	if maxPriceString != "" {
@@ -220,11 +220,11 @@ func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request)
 			form.CheckField(false, "maxPrice", "Invalid input")
 		} else {
 			form.MaxPrice = int64(maxPrice)
-			form.CheckField(form.MaxPrice > 0, "minPrice", "Min Price should be smaller than Max Price")
+			form.CheckField(form.MaxPrice > 0, "minPrice", "Value must be greater than 0")
 		}
 	}
 	if minPriceString != "" && maxPriceString != "" {
-		form.CheckField(form.MinPrice < form.MaxPrice, "minPrice", "Min Price should be smaller than Max Price")
+		form.CheckField(form.MinPrice < form.MaxPrice, "maxPrice", "Min Price should be smaller than Max Price")
 	}
 	if !form.Valid() {
 		data := app.newTemplateData(r)
