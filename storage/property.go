@@ -32,6 +32,8 @@ type Property struct {
 	Title        string
 	Description  string
 	PropertyType string
+	Latitude     float64
+	Longitude    float64
 	Banner       string
 	Location     string
 	Price        int64
@@ -100,8 +102,9 @@ func (s *PropertyStorage) Insert(property Property) error {
 
 	queryInsertListing := `
       insert into listings
-      (title, user_id, description, banner, location, property_type, price)
-      values ($1, $2, $3, $4, $5, $6, $7)
+        (title, user_id, description, banner, location, property_type, latitude, longitude, price)
+      values
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       returning id
     `
 	args := []any{
@@ -111,6 +114,7 @@ func (s *PropertyStorage) Insert(property Property) error {
 		property.Banner,
 		property.Location,
 		property.PropertyType,
+		property.Latitude, property.Longitude,
 		property.Price,
 	}
 
@@ -214,7 +218,7 @@ func (s *PropertyStorage) GetByID(id int64) (Property, error) {
 	query := `
         select
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.created_at, users.id, users.username
+            listings.price, listings.latitude, listings.longitude, listings.created_at, users.id, users.username
         from
             listings
         join
@@ -229,7 +233,19 @@ func (s *PropertyStorage) GetByID(id int64) (Property, error) {
 	p := Property{
 		Pictures: []string{},
 	}
-	err := row.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+	err := row.Scan(
+		&p.ID,
+		&p.Title,
+		&p.Description,
+		&p.Banner,
+		&p.Location,
+		&p.Price,
+		&p.Latitude,
+		&p.Longitude,
+		&p.CreatedAt,
+		&p.UserID,
+		&p.Username,
+	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return p, ErrNoRecord

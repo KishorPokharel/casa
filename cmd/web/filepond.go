@@ -71,6 +71,8 @@ type propertyCreateForm2 struct {
 	PropertyType string
 	Location     string
 	Price        int64
+	Latitude     float64
+	Longitude    float64
 	Thumbnail    string
 	Pictures     []string
 	Description  string
@@ -98,9 +100,13 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 		Pictures:     r.Form["picture"],
 	}
 	priceString := r.FormValue("price")
+	latitudeString := r.FormValue("latitude")
+	longitudeString := r.FormValue("longitude")
 
 	// validate form
 	form.CheckField(validator.NotBlank(priceString), "price", "This field can not be blank")
+	form.CheckField(validator.NotBlank(latitudeString), "latitude", "This field can not be blank")
+	form.CheckField(validator.NotBlank(longitudeString), "longitude", "This field can not be blank")
 	form.CheckField(validator.NotBlank(form.Title), "title", "This field can not be blank")
 	form.CheckField(validator.NotBlank(form.Location), "location", "This field can not be blank")
 	form.CheckField(validator.NotBlank(form.Description), "description", "This field can not be blank")
@@ -121,6 +127,24 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 		}
 		form.Price = int64(price)
 		form.CheckField(form.Price > 0, "price", "Price must greater than 0")
+	}
+	if strings.TrimSpace(latitudeString) != "" {
+		latitude, err := strconv.ParseFloat(latitudeString, 64)
+		if err != nil {
+			form.CheckField(false, "latitude", "Invalid input")
+		} else {
+			// TODO: maybe check whats valid latitude/longitude
+			form.Latitude = latitude
+		}
+	}
+	if strings.TrimSpace(longitudeString) != "" {
+		longitude, err := strconv.ParseFloat(longitudeString, 64)
+		if err != nil {
+			form.CheckField(false, "longitude", "Invalid input")
+		} else {
+			// TODO: maybe check whats valid latitude/longitude
+			form.Longitude = longitude
+		}
 	}
 
 	page := "./ui/templates/pages/property_create_filepond.html"
@@ -166,6 +190,8 @@ func (app *application) handleNewListingFilepond(w http.ResponseWriter, r *http.
 		Title:        form.Title,
 		Description:  form.Description,
 		PropertyType: form.PropertyType,
+		Latitude:     form.Latitude,
+		Longitude:    form.Longitude,
 		Price:        form.Price,
 		UserID:       userID,
 		Pictures:     form.Pictures,

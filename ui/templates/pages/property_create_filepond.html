@@ -34,12 +34,18 @@
       </div>
       <fieldset class="grid">
         <div>
-        <label for="lat">Latitude</label>
-        <input required type="text" id="latitudeInput">
+          <label for="lat">Latitude</label>
+          <input required type="text" name="latitude" id="latitudeInput">
+          {{ with .Form.FieldErrors.latitude }}
+          <small class="red">{{ . }}</small>
+          {{ end }}
         </div>
         <div>
-        <label for="lat">Longitude</label>
-        <input required type="text" id="longitudeInput">
+          <label for="lat">Longitude</label>
+          <input required type="text" name="longitude" id="longitudeInput">
+          {{ with .Form.FieldErrors.latitude }}
+          <small class="red">{{ . }}</small>
+          {{ end }}
         </div>
       </fieldset>
       <fieldset class="grid">
