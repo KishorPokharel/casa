@@ -2,6 +2,11 @@
 {{ .Listing.Title }}
 {{ end }}
 
+{{ define "styles" }}
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+{{ end }}
+
 {{ define "main" }}
 
 <section class="single-listing listing__{{.Listing.ID}}">
@@ -43,7 +48,31 @@
       </a>
     {{ end }}
   </div>
+  <hr>
+  <section>
+    <p>Map of the location provided by owner</p>
+    <div id="my-map" style="width: 100%; height: 400px"></div>
+  </section>
   {{ end }}
 </section>
 
+{{ end }}
+
+{{ define "scripts" }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js" ></script>
+  <script>
+    var map = L.map('my-map').setView([{{.Listing.Latitude}},{{.Listing.Longitude}} ], 20);
+    var myAPIKey = "d76967abd63741b894c6517816a7c8ec";
+    var isRetina = L.Browser.retina;
+
+    var baseUrl = "https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey={apiKey}";
+    var retinaUrl = "https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}@2x.png?apiKey={apiKey}";
+
+    L.tileLayer(isRetina ? retinaUrl : baseUrl, {
+        attribution: 'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap</a> contributors',
+        apiKey: myAPIKey,
+        maxZoom: 20,
+        id: 'osm-bright',
+    }).addTo(map);
+  </script>
 {{ end }}

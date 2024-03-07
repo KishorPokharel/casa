@@ -55,6 +55,7 @@
   border: 1px solid transparent;
   width: 150px;
   border-radius: 4px;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
 }
 
