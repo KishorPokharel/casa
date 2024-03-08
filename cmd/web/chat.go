@@ -9,7 +9,9 @@ import (
 )
 
 func (app *application) handleChat(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Single Chat Page")
+	page := "./ui/templates/pages/single-chat.html"
+	data := app.newTemplateData(r)
+	app.render(w, r, http.StatusOK, page, data)
 }
 
 func (app *application) handleAllChatsPage(w http.ResponseWriter, r *http.Request) {
