@@ -1,6 +1,7 @@
 {{ define "title" }}Chat{{ end }}
 
 {{ define "main" }}
+<input hidden name="roomID" value="some-room-id">
   <div class="chat-container">
     <div class="message-box">
       <div class="message-box-bar">
@@ -38,7 +39,11 @@
       </div>
     </div>
     <div>
-      <input type="text" placeholder="Enter message here">
+      <input class="messageInput" type="text" placeholder="Enter message here">
     </div>
   </div>
+{{ end }}
+
+{{ define "scripts" }}
+<script src="/public/js/chat.js"></script>
 {{ end }}
