@@ -2,6 +2,7 @@
 
 {{ define "main" }}
 <input hidden name="roomID" value="{{ .RoomID }}">
+<input hidden name="userID" value="{{ .AuthenticatedUser.ID }}">
   <div class="chat-container">
     <div class="message-box">
       <div class="message-box-bar">
@@ -14,34 +15,6 @@
           <small>{{ .CreatedAt }}</small>
         </div>
         {{ end }}
-        <!-- <div class="message"> -->
-        <!--   <p>Hello There</p> -->
-        <!--   <small>5:35 PM</small> -->
-        <!-- </div> -->
-        <!-- <div class="message message-my"> -->
-        <!--     <p>Hello There</p> -->
-        <!--     <small>5:35 PM</small> -->
-        <!-- </div> -->
-        <!-- <div class="message"> -->
-        <!--     <p>Hello There</p> -->
-        <!--     <small>5:35 PM</small> -->
-        <!-- </div> -->
-        <!-- <div class="message"> -->
-        <!--     <p>Hello There</p> -->
-        <!--     <small>5:35 PM</small> -->
-        <!-- </div> -->
-        <!-- <div class="message message-my"> -->
-        <!--     <p>Hello There</p> -->
-        <!--     <small>5:35 PM</small> -->
-        <!-- </div> -->
-        <!-- <div class="message"> -->
-        <!--     <p>Hello There</p> -->
-        <!--     <small>5:35 PM</small> -->
-        <!-- </div> -->
-        <!-- <div class="message message-my"> -->
-        <!--     <p>Hello There</p> -->
-        <!--     <small>5:35 PM</small> -->
-        <!-- </div> -->
       </div>
     </div>
     <div>

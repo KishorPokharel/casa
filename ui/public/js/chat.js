@@ -1,10 +1,13 @@
 $(function () {
   const messageInput = $('.messageInput');
-  const roomID = $("input[name=roomID]").val();
-  alert(roomID);
+  const roomID = $('input[name=roomID]').val();
+  const userIDString = $('input[name=userID]').val();
+  const userID = parseInt(userIDString);
+  $('.messages > :last-child')[0].scrollIntoView(false); // scroll to bottom
 
   let socket = null;
   window.socket = socket;
+
   if (!window['WebSocket']) {
     alert('browser not supported');
     return;
@@ -16,6 +19,39 @@ $(function () {
     };
     socket.onmessage = function (e) {
       let msg = JSON.parse(e.data);
-    }
+      let className;
+      if (msg.sender_id === userID) {
+        className = 'message message-my';
+        $('.messages').append(
+          $('<div>')
+            .addClass(className)
+            .append(
+              $('<p>').text(msg.content),
+              $('<span>').text(msg.created_at),
+            ),
+        );
+      } else {
+        className = 'message';
+        $('.messages').append(
+          $('<div>')
+            .addClass(className)
+            .append(
+              $('<p>').text(msg.content),
+              $('<span>').text(msg.created_at),
+            ),
+        );
+      }
+      $('.messages > :last-child')[0].scrollIntoView(false); // scroll to bottom
+    };
   }
+
+  messageInput.on('keyup', e => {
+    if (e.keyCode === 13) {
+      if (!messageInput.val()) {
+        return;
+      }
+      socket.send(JSON.stringify({content: messageInput.val()}));
+      messageInput.val('');
+    }
+  });
 });
