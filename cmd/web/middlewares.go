@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"expvar"
+	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -27,6 +30,15 @@ type StatusResponseWriter struct {
 func (srw *StatusResponseWriter) WriteHeader(statusCode int) {
 	srw.Status = statusCode
 	srw.ResponseWriter.WriteHeader(statusCode)
+}
+
+// Hijack
+func (srw *StatusResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	hijacker, ok := srw.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, fmt.Errorf("Hijacking not supported")
+	}
+	return hijacker.Hijack()
 }
 
 func (app *application) logRequest(next http.Handler) http.Handler {
