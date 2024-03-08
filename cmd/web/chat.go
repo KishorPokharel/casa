@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/KishorPokharel/casa/storage"
 	"github.com/julienschmidt/httprouter"
@@ -126,10 +127,104 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: socketBufferSize,
 }
 
+type message struct {
+	SenderID  int64  `json:"sender_id,omitempty"`
+	Content   string `json:"content,omitempty"`
+	RoomID    string
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type client struct {
+	socket *websocket.Conn
+	user   storage.User
+	app    *application
+	roomID string
+	hub    *hub
+	send   chan message
+}
+
+func (c *client) read() {
+	defer c.socket.Close()
+	for {
+		var m message
+		err := c.socket.ReadJSON(&m)
+		if err != nil {
+			c.app.logger.Error("[Client] could not read message", "err", err)
+			return
+		}
+		fmt.Println("Client sent message", m)
+		msg, err := c.app.storage.Messages.Insert(m.Content, c.roomID, c.user.ID)
+		if err != nil {
+			errmsg := "message insert failed"
+			c.app.logger.Error(errmsg, "err", err)
+			return
+		}
+		m.RoomID = c.roomID
+		m.CreatedAt = msg.CreatedAt
+		m.SenderID = c.user.ID
+		c.hub.forward <- m
+	}
+}
+
+func (c *client) write() {
+	defer c.socket.Close()
+	for {
+		for m := range c.send {
+			if err := c.socket.WriteJSON(m); err != nil {
+				c.app.logger.Error("[Client] could not write message", "err", err)
+				return
+			}
+		}
+	}
+}
+
+type hub struct {
+	forward chan message
+	join    chan *client
+	leave   chan *client
+	clients map[*client]bool
+}
+
+func newHub() *hub {
+	return &hub{
+		forward: make(chan message),
+		join:    make(chan *client),
+		leave:   make(chan *client),
+		clients: make(map[*client]bool),
+	}
+}
+
+func (h *hub) run() {
+	for {
+		select {
+		case client := <-h.join:
+			h.clients[client] = true
+		case m := <-h.forward:
+			for client := range h.clients {
+				if client.roomID == m.RoomID {
+					client.send <- m
+				}
+			}
+		case client := <-h.leave:
+			delete(h.clients, client)
+			close(client.send)
+		}
+	}
+}
+
 func (app *application) handleWSChat(w http.ResponseWriter, r *http.Request) {
 	params := httprouter.ParamsFromContext(r.Context())
 	roomID := params.ByName("id")
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
 
 	// check if user with userID can access room with roomID
 	ok, err := app.storage.Messages.CanAccessRoom(userID, roomID)
@@ -142,29 +237,25 @@ func (app *application) handleWSChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		app.logger.Error("Could not upgrade connection: ", err)
 		return
 	}
-	// c, err := websocket.Accept(w, r, nil)
-	// if err != nil {
-	// 	app.logger.Error("could not accept ws connection", err)
-	// 	app.serverError(w, r, err)
-	// 	return
-	// }
-	// defer c.CloseNow()
 
-	// ctx, cancel := context.WithTimeout(r.Context(), time.Second*10)
-	// defer cancel()
+	client := &client{
+		socket: conn,
+		user:   user,
+		roomID: roomID,
+		send:   make(chan message),
+		hub:    app.hub,
+		app:    app,
+	}
 
-	// var v interface{}
-	// err = wsjson.Read(ctx, c, &v)
-	// if err != nil {
-	// 	// ...
-	// }
-
-	// log.Printf("received: %v", v)
-
-	// c.Close(websocket.StatusNormalClosure, "")
+	client.hub.join <- client
+	defer func() {
+		client.hub.leave <- client
+	}()
+	go client.read()
+	client.write()
 }

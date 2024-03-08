@@ -15,6 +15,7 @@ type application struct {
 	config         *config
 	storage        storage.Storage
 	sessionManager *scs.SessionManager
+	hub            *hub
 }
 
 func (app *application) run() error {

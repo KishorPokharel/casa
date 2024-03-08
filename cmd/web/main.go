@@ -59,6 +59,9 @@ func main() {
 		os.Mkdir(tmpDir, os.ModePerm)
 	}
 
+	app.hub = newHub()
+	go app.hub.run()
+
 	// publish stats
 	expvar.Publish("goroutines", expvar.Func(func() any {
 		return runtime.NumGoroutine()
