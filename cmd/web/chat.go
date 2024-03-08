@@ -18,6 +18,15 @@ func (app *application) handleChatPage(w http.ResponseWriter, r *http.Request) {
 	params := httprouter.ParamsFromContext(r.Context())
 	roomID := params.ByName("id")
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
 
 	ok, err := app.storage.Messages.CanAccessRoom(userID, roomID)
 	if err != nil {
@@ -29,8 +38,24 @@ func (app *application) handleChatPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	messages, err := app.storage.Messages.GetAllMessages(roomID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	chatOtherUser, err := app.storage.Messages.GetOtherUserOfRoom(userID, roomID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
 	page := "./ui/templates/pages/single-chat.html"
 	data := app.newTemplateData(r)
+	data.Messages = messages
+	data.ChatOtherUser = chatOtherUser
+	data.AuthenticatedUser = user
+	data.RoomID = roomID
 	app.render(w, r, http.StatusOK, page, data)
 }
 

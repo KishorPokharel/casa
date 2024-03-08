@@ -20,6 +20,9 @@ type Message struct {
 	RoomID    uuid.UUID
 	Text      string
 	CreatedAt time.Time
+
+	// Other Fields
+	Username string
 }
 
 type MessageStorage struct {
@@ -128,4 +131,54 @@ func (s *MessageStorage) CanAccessRoom(userID int64, roomID string) (bool, error
 		return false, err
 	}
 	return ok, nil
+}
+
+func (s *MessageStorage) GetOtherUserOfRoom(userID int64, roomID string) (User, error) {
+	query := `
+        select users.id, users.username
+        from users_rooms
+        join users on users.id = users_rooms.user_id
+        where room_id = $1 and user_id != $2
+    `
+	args := []any{roomID, userID}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	row := s.DB.QueryRowContext(ctx, query, args...)
+	var user User
+	if err := row.Scan(&user.ID, &user.Username); err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (s *MessageStorage) GetAllMessages(roomID string) ([]Message, error) {
+	query := `
+        select
+            messages.msg, messages.created_at, messages.user_id, users.username
+        from messages
+        join users on users.id = messages.user_id
+        where messages.room_id = $1
+        order by created_at asc
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	rows, err := s.DB.QueryContext(ctx, query, roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	messages := []Message{}
+	for rows.Next() {
+		var message Message
+		if err := rows.Scan(&message.Text, &message.CreatedAt, &message.UserID, &message.Username); err != nil {
+			return nil, err
+		}
+		messages = append(messages, message)
+	}
+
+	return messages, nil
 }

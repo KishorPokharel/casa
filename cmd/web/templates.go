@@ -12,15 +12,19 @@ import (
 )
 
 type templateData struct {
-	CurrentYear     int
-	Flash           string
-	Form            any
-	IsAuthenticated bool
-	User            storage.User
-	Listings        []storage.Property
-	Listing         storage.Property
-	SavedListings   []storage.Property
-	Rooms           []storage.Room
+	CurrentYear       int
+	Flash             string
+	Form              any
+	IsAuthenticated   bool
+	User              storage.User
+	Listings          []storage.Property
+	Listing           storage.Property
+	SavedListings     []storage.Property
+	Rooms             []storage.Room
+	Messages          []storage.Message
+	ChatOtherUser     storage.User
+	AuthenticatedUser storage.User
+	RoomID            string
 }
 
 func humanDate(t time.Time) string {

@@ -1,41 +1,47 @@
 {{ define "title" }}Chat{{ end }}
 
 {{ define "main" }}
-<input hidden name="roomID" value="some-room-id">
+<input hidden name="roomID" value="{{ .RoomID }}">
   <div class="chat-container">
     <div class="message-box">
       <div class="message-box-bar">
-        <p><a href="#">Asmit</a></p>
+        <p><a href="/profile/{{.ChatOtherUser.ID}}">{{ .ChatOtherUser.Username }}</a></p>
       </div>
       <div class="messages">
-        <div class="message message">
-            <p>Hello There</p>
-            <small>5:35 PM</small>
+        {{ range .Messages }}
+        <div class="message {{ if eq .UserID $.AuthenticatedUser.ID }} message-my {{ end }}">
+          <p>{{ .Text }}</p>
+          <small>{{ .CreatedAt }}</small>
         </div>
-        <div class="message message-my">
-            <p>Hello There</p>
-            <small>5:35 PM</small>
-        </div>
-        <div class="message">
-            <p>Hello There</p>
-            <small>5:35 PM</small>
-        </div>
-        <div class="message">
-            <p>Hello There</p>
-            <small>5:35 PM</small>
-        </div>
-        <div class="message message-my">
-            <p>Hello There</p>
-            <small>5:35 PM</small>
-        </div>
-        <div class="message">
-            <p>Hello There</p>
-            <small>5:35 PM</small>
-        </div>
-        <div class="message message-my">
-            <p>Hello There</p>
-            <small>5:35 PM</small>
-        </div>
+        {{ end }}
+        <!-- <div class="message"> -->
+        <!--   <p>Hello There</p> -->
+        <!--   <small>5:35 PM</small> -->
+        <!-- </div> -->
+        <!-- <div class="message message-my"> -->
+        <!--     <p>Hello There</p> -->
+        <!--     <small>5:35 PM</small> -->
+        <!-- </div> -->
+        <!-- <div class="message"> -->
+        <!--     <p>Hello There</p> -->
+        <!--     <small>5:35 PM</small> -->
+        <!-- </div> -->
+        <!-- <div class="message"> -->
+        <!--     <p>Hello There</p> -->
+        <!--     <small>5:35 PM</small> -->
+        <!-- </div> -->
+        <!-- <div class="message message-my"> -->
+        <!--     <p>Hello There</p> -->
+        <!--     <small>5:35 PM</small> -->
+        <!-- </div> -->
+        <!-- <div class="message"> -->
+        <!--     <p>Hello There</p> -->
+        <!--     <small>5:35 PM</small> -->
+        <!-- </div> -->
+        <!-- <div class="message message-my"> -->
+        <!--     <p>Hello There</p> -->
+        <!--     <small>5:35 PM</small> -->
+        <!-- </div> -->
       </div>
     </div>
     <div>
