@@ -182,3 +182,20 @@ func (s *MessageStorage) GetAllMessages(roomID string) ([]Message, error) {
 
 	return messages, nil
 }
+
+func (s *MessageStorage) Insert(message, roomID string, userID int64) (Message, error) {
+	query := `
+      insert into messages (msg, user_id, room_id) values ($1, $2, $3)
+      returning msg, user_id, room_id, created_at
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	row := s.DB.QueryRowContext(ctx, query, message, userID, roomID)
+	var m Message
+	if err := row.Scan(&m.Text, &m.UserID, &m.RoomID, &m.CreatedAt); err != nil {
+		return m, err
+	}
+	return m, nil
+}
