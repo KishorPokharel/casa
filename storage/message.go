@@ -116,3 +116,16 @@ func (s *MessageStorage) NewRoom(userID, ownerID int64) (uuid.UUID, error) {
 
 	return roomID, nil
 }
+
+func (s *MessageStorage) CanAccessRoom(userID int64, roomID string) (bool, error) {
+	query := "select exists ( select true from users_rooms where user_id = $1 and room_id = $2 )"
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	row := s.DB.QueryRowContext(ctx, query, userID, roomID)
+	var ok bool
+	if err := row.Scan(&ok); err != nil {
+		return false, err
+	}
+	return ok, nil
+}
