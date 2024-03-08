@@ -1,0 +1,12 @@
+{{ define "title" }}Messages{{ end }}
+
+{{ define "main" }}
+<section>
+<h2>Your Chats</h2>
+{{ range .Rooms }}
+<div>
+  <a href="/chat/{{.ID}}">{{ .User.Username }}</a>
+</div>
+{{ end }}
+</section>
+{{ end }}

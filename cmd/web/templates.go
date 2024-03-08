@@ -20,6 +20,7 @@ type templateData struct {
 	Listings        []storage.Property
 	Listing         storage.Property
 	SavedListings   []storage.Property
+	Rooms           []storage.Room
 }
 
 func humanDate(t time.Time) string {
