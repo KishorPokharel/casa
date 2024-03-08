@@ -14,7 +14,7 @@
 <!-- SEARCH -->
 <div>
   <form action="/search" method="get">
-    <input autofocus list="locations" type="search" name="query" placeholder="Enter a location">
+    <input id="searchInput" autofocus list="locations" type="search" name="query" placeholder="Enter a location">
     <datalist id="locations">
       <option value="biratnagar">
       <option value="jhapa">
@@ -53,4 +53,10 @@
 </section>
 <!-- LISTINGS GRID -->
 
+{{ end }}
+
+{{ define "scripts" }}
+<!-- <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script> -->
+<!-- <script src="/public/js/ufuzzy.js"></script> -->
+<!-- <script src="/public/js/search.js"></script> -->
 {{ end }}

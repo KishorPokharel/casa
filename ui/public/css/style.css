@@ -84,3 +84,66 @@
 #locationResults li {
   cursor: pointer;
 }
+
+/* CHAT STYLES */
+
+.chat-container {
+  height: 80vh;
+  display: grid;
+  gap: 1rem;
+  grid-template-rows: 1fr auto;
+}
+
+.message-box {
+  height: 100%;
+  overflow-y: scroll;
+  /* background-color: pink; */
+  background-color: hsla(194.9, 84.7%, 41%, 0.03);
+  border-radius: .25rem;
+  border: 1px solid;
+  border-color: hsl(205, 14%, 68%);
+}
+
+.message-box-bar {
+  padding: 1rem;
+  border-bottom: 1px solid hsl(205, 14%, 68%);
+  position: sticky;
+  top: 0;
+  background-color: hsla(194.9, 84.7%, 41%);
+}
+
+.message-box-bar a {
+  color: #fff;
+}
+
+/* reset p styles */
+.message-box-bar p,
+.message p {
+  margin: 0;
+  padding: 0;
+}
+
+.messages {
+  padding: .5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.messages > .message + .message {
+  margin-top: .5rem;
+}
+
+.message {
+  align-self: start;
+  width: 40%;
+  border-radius: .25rem;
+  padding: .75rem;
+  background-color: hsla(194.9, 84.7%, 41%, 0.07);
+}
+
+.message.message-my {
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
