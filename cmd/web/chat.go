@@ -1,11 +1,17 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/KishorPokharel/casa/storage"
+	"github.com/julienschmidt/httprouter"
+	"nhooyr.io/websocket"
+	"nhooyr.io/websocket/wsjson"
 )
 
 func (app *application) handleChat(w http.ResponseWriter, r *http.Request) {
@@ -72,4 +78,38 @@ func (app *application) handleMessageOwner(w http.ResponseWriter, r *http.Reques
 
 	redirectURL := fmt.Sprintf("/chat/%s", roomID)
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+}
+
+func (app *application) handleWSChat(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	roomID := params.ByName("id")
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+
+	// TODO: check if user with userID can access room with roomID
+	ok, err := app.storage.Messages.CanAccessRoom(userID, roomID)
+	if !ok {
+		app.serverError(w, r, err)
+		return
+	}
+
+	c, err := websocket.Accept(w, r, nil)
+	if err != nil {
+		app.logger.Error("could not accept ws connection", err)
+		app.serverError(w, r, err)
+		return
+	}
+	defer c.CloseNow()
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*10)
+	defer cancel()
+
+	var v interface{}
+	err = wsjson.Read(ctx, c, &v)
+	if err != nil {
+		// ...
+	}
+
+	log.Printf("received: %v", v)
+
+	c.Close(websocket.StatusNormalClosure, "")
 }

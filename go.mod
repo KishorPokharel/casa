@@ -13,6 +13,7 @@ require (
 	github.com/leekchan/accounting v1.0.0
 	github.com/lib/pq v1.10.9
 	golang.org/x/crypto v0.17.0
+	nhooyr.io/websocket v1.8.10
 )
 
 require (
