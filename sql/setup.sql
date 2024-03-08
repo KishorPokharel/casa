@@ -47,3 +47,20 @@ create table if not exists favorites (
 );
 
 alter table favorites add constraint unique_user_listing_pair unique(user_id, listing_id);
+
+create table if not exists rooms (
+    id uuid not null default gen_random_uuid() primary key,
+    created_at timestamp(0) with time zone not null default now()
+);
+
+create table if not exists messages (
+  user_id bigint references users(id) not null,
+  room_id uuid references rooms(id) not null,
+  msg text not null,
+  created_at timestamptz(0) not null default now()
+);
+
+create table if not exists users_rooms (
+  user_id bigint references users(id) not null,
+  room_id uuid references rooms(id) not null
+);
