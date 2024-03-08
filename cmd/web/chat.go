@@ -14,7 +14,21 @@ import (
 	"nhooyr.io/websocket/wsjson"
 )
 
-func (app *application) handleChat(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleChatPage(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	roomID := params.ByName("id")
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+
+	ok, err := app.storage.Messages.CanAccessRoom(userID, roomID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	if !ok {
+		app.clientError(w, http.StatusForbidden)
+		return
+	}
+
 	page := "./ui/templates/pages/single-chat.html"
 	data := app.newTemplateData(r)
 	app.render(w, r, http.StatusOK, page, data)
@@ -85,10 +99,14 @@ func (app *application) handleWSChat(w http.ResponseWriter, r *http.Request) {
 	roomID := params.ByName("id")
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
 
-	// TODO: check if user with userID can access room with roomID
+	// check if user with userID can access room with roomID
 	ok, err := app.storage.Messages.CanAccessRoom(userID, roomID)
-	if !ok {
+	if err != nil {
 		app.serverError(w, r, err)
+		return
+	}
+	if !ok {
+		app.clientError(w, http.StatusForbidden)
 		return
 	}
 
