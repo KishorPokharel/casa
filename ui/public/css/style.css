@@ -147,3 +147,16 @@
   flex-direction: column;
   align-items: flex-end;
 }
+
+/* map buttons fix */
+.lb-close[role=button],
+.leaflet-control-zoom-out[role=button], 
+.leaflet-control-zoom-in[role=button] {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.lb-close[role=button]:not([href]) {
+  pointer-events: auto;
+}
