@@ -36,7 +36,7 @@ func (srw *StatusResponseWriter) WriteHeader(statusCode int) {
 func (srw *StatusResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	hijacker, ok := srw.ResponseWriter.(http.Hijacker)
 	if !ok {
-		return nil, nil, fmt.Errorf("Hijacking not supported")
+		return nil, nil, fmt.Errorf("hijacking not supported")
 	}
 	return hijacker.Hijack()
 }

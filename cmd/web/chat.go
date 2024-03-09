@@ -103,6 +103,8 @@ func (app *application) handleMessageOwner(w http.ResponseWriter, r *http.Reques
 			app.logger.Info("room not exists, creating new one")
 			roomID, err := app.storage.Messages.NewRoom(userID, ownerID)
 			if err != nil {
+				app.serverError(w, r, err)
+				return
 			}
 			redirectURL := fmt.Sprintf("/chat/%s", roomID)
 			http.Redirect(w, r, redirectURL, http.StatusSeeOther)
