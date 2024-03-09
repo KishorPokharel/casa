@@ -228,9 +228,9 @@ func (app *application) handleProfileEdit(w http.ResponseWriter, r *http.Request
 	}
 	form.CheckField(validator.NotBlank(form.Username), "username", "This field can not be blank")
 	form.CheckField(validator.MaxChars(form.Username, 20), "username", "This field can not be more than 20 chars")
-	form.CheckField(validator.Matches(form.Phone, validator.PhoneRX), "phone", "Invalid phone")
 	if form.Phone != "" {
 		form.CheckField(len(form.Phone) == 10, "phone", "Phone must be 10 digits")
+		form.CheckField(validator.Matches(form.Phone, validator.PhoneRX), "phone", "Invalid phone")
 	}
 
 	page := "./ui/templates/pages/profile_edit.html"
