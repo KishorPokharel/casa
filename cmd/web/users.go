@@ -309,9 +309,9 @@ func (app *application) handleChangePassword(w http.ResponseWriter, r *http.Requ
 			data := app.newTemplateData(r)
 			data.Form = form
 			app.render(w, r, http.StatusUnprocessableEntity, page, data)
-		} else if err != nil {
-			app.serverError(w, r, err)
+			return
 		}
+		app.serverError(w, r, err)
 		return
 	}
 
