@@ -3,7 +3,8 @@ $(function () {
   const roomID = $('input[name=roomID]').val();
   const userIDString = $('input[name=userID]').val();
   const userID = parseInt(userIDString);
-  $('.messages > :last-child')[0].scrollIntoView(false); // scroll to bottom
+  const lastChild = $('.messages > :last-child')[0]
+  lastChild && lastChild.scrollIntoView(false); // scroll to bottom
 
   let socket = null;
   window.socket = socket;
@@ -41,7 +42,9 @@ $(function () {
             ),
         );
       }
-      $('.messages > :last-child')[0].scrollIntoView(false); // scroll to bottom
+      const lastChild = $('.messages > :last-child')[0]
+      lastChild && lastChild.scrollIntoView(false); // scroll to bottom
+      // $('.messages > :last-child')[0].scrollIntoView(false); // scroll to bottom
     };
   }
 
