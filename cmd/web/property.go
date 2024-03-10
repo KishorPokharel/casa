@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -220,11 +221,13 @@ func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request)
 			form.CheckField(false, "maxPrice", "Invalid input")
 		} else {
 			form.MaxPrice = int64(maxPrice)
-			form.CheckField(form.MaxPrice > 0, "minPrice", "Value must be greater than 0")
+			form.CheckField(form.MaxPrice >= 0, "maxPrice", "Value must be greater than 0")
 		}
 	}
 	if minPriceString != "" && maxPriceString != "" {
-		form.CheckField(form.MinPrice < form.MaxPrice, "maxPrice", "Min Price should be smaller than Max Price")
+		if !(form.MinPrice == 0 && form.MaxPrice == 0) {
+			form.CheckField(form.MinPrice < form.MaxPrice, "maxPrice", "Min Price should be smaller than Max Price")
+		}
 	}
 	if !form.Valid() {
 		data := app.newTemplateData(r)
@@ -388,13 +391,17 @@ func (app *application) handleMyListingsPage(w http.ResponseWriter, r *http.Requ
 }
 
 func (app *application) handleGetAllLocations(w http.ResponseWriter, r *http.Request) {
+	locationQuery := strings.TrimSpace(r.URL.Query().Get("query"))
 	locations, err := app.storage.Property.GetAllLocations()
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
+
+	matches := RankFind(locationQuery, locations)
+	sort.Sort(matches)
 	data := map[string]any{
-		"locations": locations,
+		"matches": matches,
 	}
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
