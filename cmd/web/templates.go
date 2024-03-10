@@ -47,6 +47,16 @@ func (app *application) newTemplateData(r *http.Request) templateData {
 		Flash:           app.sessionManager.PopString(r.Context(), sessionFlashKey),
 		IsAuthenticated: app.isAuthenticated(r),
 	}
+	if app.isAuthenticated(r) {
+		userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+		// TODO: fix this
+		user, err := app.storage.Users.Get(userID)
+		if err != nil {
+			app.logger.Error("could not get user", "err", err)
+		} else {
+			data.AuthenticatedUser = user
+		}
+	}
 	return data
 }
 

@@ -24,13 +24,18 @@
     {{ if .IsAuthenticated }}
     <li>
       <details role="list" dir="rtl">
-        <summary aria-haspopup="listbox" role="link">Account</summary>
+        <summary aria-haspopup="listbox" role="link">
+          {{ if .AuthenticatedUser.Username }}
+            {{.AuthenticatedUser.Username}} 
+          {{else}}
+            Account
+          {{end}}
+        </summary>
         <ul role="listbox">
           <li><a href="/profile">Profile</a></li>
           <li><a href="/listings/my">My Listings</a></li>
           <li><a href="/listings/saved">Saved</a></li>
           <li><a href="/chat-all">Messages</a></li>
-          <!-- <li><a>Dashboard</a></li> -->
           <li><a href="#" onclick="logoutLink.click()">Logout</a></li>
         </ul>
       </details>
