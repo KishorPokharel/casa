@@ -238,7 +238,7 @@ func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
         and
             (listings.property_type = $2 or $2='')
         and
-            ((listings.price >= $3 and listings.price <= $3) or ($3 = 0 and $4 = 0))
+            ((listings.price >= $3 and listings.price <= $4) or ($3 = 0 and $4 = 0))
         order by rank desc
     `
 	fmt.Println(filter)
