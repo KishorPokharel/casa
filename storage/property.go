@@ -497,3 +497,18 @@ func (s *PropertyStorage) GetAllLocations() ([]string, error) {
 	}
 	return locations, nil
 }
+
+func (s *PropertyStorage) GetMinMaxPrice() (int64, int64, error) {
+	query := `select min(price), max(price) from listings`
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	row := s.DB.QueryRowContext(ctx, query)
+	var min, max int64
+	if err := row.Scan(&min, &max); err != nil {
+		return min, max, err
+	}
+
+	return min, max, nil
+}
