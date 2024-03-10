@@ -5,7 +5,8 @@
 <section>
   <h4>Search For Property Here</h4>
   <form action="/search" method="get">
-    <input autofocus type="text" name="query" placeholder="Enter a location" value="{{ .Form.Location }}">
+    <input autocomplete="off" id="searchInput" autofocus type="text" name="query" placeholder="Enter a location" value="{{ .Form.Location }}">
+    <ul id="locationResults"></ul>
     <fieldset class="grid">
       <div>
         <label for="">Property Type</label>
@@ -17,20 +18,22 @@
       </div>
       <div>
         <label for="">Min Price</label>
-        <input type="number" name="minPrice">
+        <input required type="number" name="minPrice" value="{{.Form.MinPrice}}">
         {{ with .Form.FieldErrors.minPrice }}
         <small class="red">{{ . }}</small>
         {{ end }}
       </div>
       <div>
         <label for="">Max Price</label>
-        <input type="number" name="maxPrice">
+        <input required type="number" name="maxPrice" value="{{.Form.MaxPrice}}">
         {{ with .Form.FieldErrors.maxPrice }}
         <small class="red">{{ . }}</small>
         {{ end }}
       </div>
     </fieldset>
     <a href="#" id="resetPriceBtn">Reset Price</a>
+    <br>
+    <!-- <small>* Zero values for min and max price means any price</small> -->
     <br>
     <br>
     <div>
@@ -70,6 +73,7 @@
 {{ end }}
 
 {{ define "scripts" }}
+<script src="/public/js/search.js"></script>
 <script>
   const resetPriceBtn = document.querySelector("#resetPriceBtn");
   const minPriceInput = document.querySelector("input[name=minPrice]");
@@ -77,8 +81,8 @@
 
   resetPriceBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    minPriceInput.value = "";
-    maxPriceInput.value = "";
+    minPriceInput.value = "0";
+    maxPriceInput.value = "0";
   });
 </script>
 {{ end }}
