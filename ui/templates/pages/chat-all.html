@@ -1,12 +1,18 @@
 {{ define "title" }}Messages{{ end }}
 
 {{ define "main" }}
-<section>
-<h2>Your Chats</h2>
-{{ range .Rooms }}
-<div>
-  <a href="/chat/{{.ID}}">{{ .User.Username }}</a>
-</div>
-{{ end }}
-</section>
+  <section>
+  {{ if eq (len .Rooms) 0 }}
+    <p>Nothing to see here.</p>
+  {{ else }}
+    <h6>Your chats</h6>
+    <table>
+      {{ range .Rooms }}
+        <tr>
+          <td><a href="/chat/{{.ID}}">{{.User.Username}}</a></td>
+        </tr>
+      {{ end }}
+    </table>
+  {{ end }}
+  </section>
 {{ end }}

@@ -154,7 +154,6 @@ func (c *client) read() {
 			c.app.logger.Error("[Client] could not read message", "err", err)
 			return
 		}
-		fmt.Println("Client sent message", m)
 		msg, err := c.app.storage.Messages.Insert(m.Content, c.roomID, c.user.ID)
 		if err != nil {
 			errmsg := "message insert failed"

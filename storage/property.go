@@ -241,7 +241,6 @@ func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
             ((listings.price >= $3 and listings.price <= $4) or ($3 = 0 and $4 = 0))
         order by rank desc
     `
-	fmt.Println(filter)
 	args := []any{filter.Location, filter.PropertyType, filter.MinPrice, filter.MaxPrice}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
