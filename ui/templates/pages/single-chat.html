@@ -12,7 +12,7 @@
         {{ range .Messages }}
         <div class="message {{ if eq .UserID $.AuthenticatedUser.ID }} message-my {{ end }}">
           <p>{{ .Text }}</p>
-          <small>{{ .CreatedAt }}</small>
+          <small>{{ humanDate .CreatedAt }}</small>
         </div>
         {{ end }}
       </div>

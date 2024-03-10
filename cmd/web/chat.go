@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/KishorPokharel/casa/storage"
 	"github.com/julienschmidt/httprouter"
@@ -133,7 +132,7 @@ type message struct {
 	SenderID  int64  `json:"sender_id,omitempty"`
 	Content   string `json:"content,omitempty"`
 	RoomID    string
-	CreatedAt time.Time `json:"created_at"`
+	CreatedAt string `json:"created_at"`
 }
 
 type client struct {
@@ -161,7 +160,7 @@ func (c *client) read() {
 			return
 		}
 		m.RoomID = c.roomID
-		m.CreatedAt = msg.CreatedAt
+		m.CreatedAt = humanDate(msg.CreatedAt)
 		m.SenderID = c.user.ID
 		c.hub.forward <- m
 	}

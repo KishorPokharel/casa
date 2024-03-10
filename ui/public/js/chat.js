@@ -28,7 +28,7 @@ $(function () {
             .addClass(className)
             .append(
               $('<p>').text(msg.content),
-              $('<span>').text(msg.created_at),
+              $('<small>').text(msg.created_at),
             ),
         );
       } else {
@@ -38,7 +38,7 @@ $(function () {
             .addClass(className)
             .append(
               $('<p>').text(msg.content),
-              $('<span>').text(msg.created_at),
+              $('<small>').text(msg.created_at),
             ),
         );
       }
