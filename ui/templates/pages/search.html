@@ -18,14 +18,14 @@
       </div>
       <div>
         <label for="">Min Price</label>
-        <input required type="number" name="minPrice" value="{{.Form.MinPrice}}">
+        <input type="number" name="minPrice" value="{{.Form.MinPrice}}">
         {{ with .Form.FieldErrors.minPrice }}
         <small class="red">{{ . }}</small>
         {{ end }}
       </div>
       <div>
         <label for="">Max Price</label>
-        <input required type="number" name="maxPrice" value="{{.Form.MaxPrice}}">
+        <input type="number" name="maxPrice" value="{{.Form.MaxPrice}}">
         {{ with .Form.FieldErrors.maxPrice }}
         <small class="red">{{ . }}</small>
         {{ end }}
@@ -81,8 +81,8 @@
 
   resetPriceBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    minPriceInput.value = "0";
-    maxPriceInput.value = "0";
+    minPriceInput.value = "";
+    maxPriceInput.value = "";
   });
 </script>
 {{ end }}

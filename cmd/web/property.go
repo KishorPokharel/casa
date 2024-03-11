@@ -188,46 +188,46 @@ func (app *application) handleSingleListingPage(w http.ResponseWriter, r *http.R
 type queryForm struct {
 	Location     string
 	PropertyType string
-	MinPrice     int64
-	MaxPrice     int64
+	MinPrice     string
+	MaxPrice     string
 	validator.Validator
 }
 
 func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/search.html"
 	// query := strings.TrimSpace(r.URL.Query().Get("query"))
-	minPriceString := strings.TrimSpace(r.URL.Query().Get("minPrice"))
-	maxPriceString := strings.TrimSpace(r.URL.Query().Get("maxPrice"))
 
 	form := queryForm{
 		Location:     strings.TrimSpace(r.URL.Query().Get("query")),
 		PropertyType: strings.TrimSpace(r.URL.Query().Get("propertyType")),
+		MinPrice:     strings.TrimSpace(r.URL.Query().Get("minPrice")),
+		MaxPrice:     strings.TrimSpace(r.URL.Query().Get("maxPrice")),
 	}
 
 	permitted := slices.Concat([]string{"", "any"}, propertyTypes)
 	form.CheckField(validator.PermittedValue(form.PropertyType, permitted...), "propertyType", "Invalid property type")
-	if minPriceString != "" {
-		minPrice, err := strconv.Atoi(minPriceString)
+
+	var minPrice, maxPrice int64
+	if form.MinPrice != "" {
+		minPriceInt, err := strconv.Atoi(form.MinPrice)
 		if err != nil {
 			form.CheckField(false, "minPrice", "Invalid input")
 		} else {
-			form.MinPrice = int64(minPrice)
-			form.CheckField(form.MinPrice >= 0, "minPrice", "Value must be greater or equal to 0")
+			minPrice = int64(minPriceInt)
+			form.CheckField(minPrice >= 0, "minPrice", "Value must be greater or equal to 0")
 		}
 	}
-	if maxPriceString != "" {
-		maxPrice, err := strconv.Atoi(maxPriceString)
+	if form.MaxPrice != "" {
+		maxPriceInt, err := strconv.Atoi(form.MaxPrice)
 		if err != nil {
 			form.CheckField(false, "maxPrice", "Invalid input")
 		} else {
-			form.MaxPrice = int64(maxPrice)
-			form.CheckField(form.MaxPrice >= 0, "maxPrice", "Value must be greater than 0")
+			maxPrice = int64(maxPriceInt)
+			form.CheckField(maxPrice > 0, "maxPrice", "Value must be greater than 0")
 		}
 	}
-	if minPriceString != "" && maxPriceString != "" {
-		if !(form.MinPrice == 0 && form.MaxPrice == 0) {
-			form.CheckField(form.MinPrice < form.MaxPrice, "maxPrice", "Min Price should be smaller than Max Price")
-		}
+	if form.MinPrice != "" && form.MaxPrice != "" {
+		form.CheckField(minPrice < maxPrice, "maxPrice", "Min Price should be smaller than Max Price")
 	}
 	if !form.Valid() {
 		data := app.newTemplateData(r)
@@ -239,8 +239,19 @@ func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request)
 	filter := storage.PropertyFilter{
 		Location:     form.Location,
 		PropertyType: form.PropertyType,
-		MinPrice:     form.MinPrice,
-		MaxPrice:     form.MaxPrice,
+		MinPrice:     minPrice,
+		MaxPrice:     maxPrice,
+	}
+	min, max, err := app.storage.Property.GetMinMaxPrice()
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	if form.MinPrice == "" {
+		filter.MinPrice = min
+	}
+	if form.MaxPrice == "" {
+		filter.MaxPrice = max
 	}
 	listings, err := app.storage.Property.Search2(filter)
 	if err != nil {
