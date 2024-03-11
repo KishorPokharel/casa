@@ -135,10 +135,14 @@
 
 .message {
   align-self: start;
-  width: 40%;
+  width: min(400px, 70%);
   border-radius: .25rem;
   padding: .75rem;
   background-color: hsla(194.9, 84.7%, 41%, 0.07);
+}
+
+.message p {
+  word-break: break-all;
 }
 
 .message.message-my {
