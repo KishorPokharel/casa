@@ -164,3 +164,10 @@
 .lb-close[role=button]:not([href]) {
   pointer-events: auto;
 }
+
+
+.listing-image-delete {
+  width: 100px;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}

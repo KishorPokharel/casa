@@ -1,0 +1,149 @@
+{{ define "title" }} Edit Listing {{ end }}
+
+{{ define "main" }}
+<section>
+    <div>
+      <h4>Edit your Listing</h4>
+      <form action="/listings/edit/{{.Listing.ID}}" method="post" enctype="multipart/form-data">
+      <div>
+        <label for="title">Title</label>
+        <input 
+          {{ with .Form.FieldErrors.title }}
+          aria-invalid="true"
+          {{ end }}
+          id="title" type="text" name="title" value="{{ .Form.Title }}">
+        {{ with .Form.FieldErrors.title }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="locationInput">Location</label>
+        <input 
+          {{ with .Form.FieldErrors.location }}
+          aria-invalid="true"
+          {{ end }}
+        id="locationInput" name="location" type="text" value="{{ .Form.Location }}">
+        {{ with .Form.FieldErrors.location }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+        <div class="locationResultsContainer">
+          <ul id="locationResults">
+          </ul>
+        </div>
+      </div>
+      <fieldset class="grid">
+        <div>
+          <label for="lat">Latitude</label>
+          <input required type="text" name="latitude" id="latitudeInput" value="{{.Form.Latitude}}">
+          {{ with .Form.FieldErrors.latitude }}
+          <small class="red">{{ . }}</small>
+          {{ end }}
+        </div>
+        <div>
+          <label for="lat">Longitude</label>
+          <input required type="text" name="longitude" id="longitudeInput" value="{{.Form.Longitude}}">
+          {{ with .Form.FieldErrors.latitude }}
+          <small class="red">{{ . }}</small>
+          {{ end }}
+        </div>
+      </fieldset>
+      <fieldset class="grid">
+      <div>
+        <label for="">Type of Property</label>
+        <select id="" name="propertyType">
+          <option {{if eq .Form.PropertyType "land"}} selected {{end}} value="land">Land</option>
+          <option {{if eq .Form.PropertyType "house"}} selected {{end}} value="house">House</option>
+        </select>
+        {{ with .Form.FieldErrors.propertyType }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="price">Price</label>
+        <input 
+          {{ with .Form.FieldErrors.price }}
+          aria-invalid="true"
+          {{ end }}
+        id="price" type="number" name="price" value="{{ .Form.Price }}">
+        {{ with .Form.FieldErrors.price }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      </fieldset>
+      <div>
+        <label for="thumbnail">Thumbnail</label>
+        <input required id="thumbnail" type="file" name="thumbnail" accept="image/jpeg, image/png, image/jpg">
+      </div>
+      <div>
+        <label for="description">Description</label>
+        <textarea style="min-height: 200px"
+          {{ with .Form.FieldErrors.description }}
+          aria-invalid="true"
+          {{ end }}
+          id="description" name="description">{{ .Form.Description }}</textarea>
+        {{ with .Form.FieldErrors.description }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="picture">Add More Pictures</label>
+        <input required multiple class="filepond" id="picture" type="file" name="picture" accept="image/jpeg, image/png, image/jpg">
+        {{ with .Form.FieldErrors.picture }}
+        <small class="red">{{ . }}</small>
+        {{ end }}
+      </div>
+      <div>
+        <label for="">Delete any images</label>
+        <div style="display: flex; gap: 1rem;">
+          {{ range .Form.Pictures }}
+          <div>
+            <img src="/uploads/{{.}}" alt="" class="listing-image-delete">
+            <br>
+            <label for="delete-image-{{.}}">
+              <input id="delete-image-{{.}}" type="checkbox"> Delete
+            </label>
+          </div>
+          {{ end }}
+        </div>
+      </div>
+      <br>
+      <div>
+        <button type="submit">Update</button>
+      </div>
+    </form>
+  </div>
+</section>
+{{ end }}
+
+{{ define "styles" }}
+  <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+{{ end }}
+
+{{ define "scripts" }}
+  <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+  <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+
+  <script>
+    FilePond.registerPlugin(FilePondPluginFileValidateSize);
+    FilePond.registerPlugin(FilePondPluginFileValidateType);
+    const thumbnailInput = document.querySelector('input[name=thumbnail]');
+    const pictureInput = document.querySelector('input[name=picture]');
+    FilePond.create(thumbnailInput, {
+      acceptedFileTypes: ['image/*'],
+      maxFileSize: "2MB",
+      server: {
+        process: "/thumbnail/upload/",
+      }
+    });
+    FilePond.create(pictureInput, {
+      acceptedFileTypes: ['image/*'],
+      maxFileSize: "1MB",
+      maxTotalFileSize: "12MB",
+      server: {
+        process: "/pictures/upload/",
+      }
+    });
+  </script>
+  <script src="/public/js/location.js"></script>
+{{ end }}

@@ -43,6 +43,8 @@ func (app *application) routes() http.Handler {
 	r.Handler(http.MethodGet, "/listings/create", protected.ThenFunc(app.handleNewListingPageWithFilepond))
 	// r.Handler(http.MethodPost, "/listings/_create", protected.ThenFunc(app.handleNewListing))
 	r.Handler(http.MethodPost, "/listings/create", protected.ThenFunc(app.handleNewListingFilepond))
+	r.Handler(http.MethodGet, "/listings/edit/:id", protected.ThenFunc(app.handleEditListingPage))
+	r.Handler(http.MethodPut, "/listings/edit/:id", protected.ThenFunc(app.handleEditListing))
 
 	r.Handler(http.MethodGet, "/listings/saved", protected.ThenFunc(app.handleSavedListingsPage))
 	r.Handler(http.MethodGet, "/listings/my", protected.ThenFunc(app.handleMyListingsPage))

@@ -417,3 +417,57 @@ func (app *application) handleGetAllLocations(w http.ResponseWriter, r *http.Req
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 }
+
+type editListingForm struct {
+	Title        string
+	Location     string
+	Latitude     float64
+	Longitude    float64
+	PropertyType string
+	Price        int64
+	Thumbnail    string
+	Description  string
+	Pictures     []string
+	validator.Validator
+}
+
+func (app *application) handleEditListingPage(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+
+	property, err := app.storage.Property.GetByID(id)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	if property.UserID != userID {
+		app.clientError(w, http.StatusForbidden)
+		return
+	}
+	page := "./ui/templates/pages/property_edit.html"
+	data := app.newTemplateData(r)
+	data.Listing = property
+	data.Form = editListingForm{
+		Title:        property.Title,
+		Location:     property.Location,
+		Latitude:     property.Latitude,
+		Longitude:    property.Longitude,
+		PropertyType: property.PropertyType,
+		Price:        property.Price,
+		Thumbnail:    property.Banner,
+		Pictures:     property.Pictures,
+		Description:  property.Description,
+	}
+	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handleEditListing(w http.ResponseWriter, r *http.Request) {
+}

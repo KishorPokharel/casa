@@ -266,7 +266,7 @@ func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
 func (s *PropertyStorage) GetByID(id int64) (Property, error) {
 	query := `
         select
-            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.id, listings.title, listings.description, listings.banner, listings.location, listings.property_type,
             listings.price, listings.latitude, listings.longitude, listings.created_at, users.id, users.username
         from
             listings
@@ -288,6 +288,7 @@ func (s *PropertyStorage) GetByID(id int64) (Property, error) {
 		&p.Description,
 		&p.Banner,
 		&p.Location,
+		&p.PropertyType,
 		&p.Price,
 		&p.Latitude,
 		&p.Longitude,
