@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"slices"
 	"sort"
 	"strconv"
@@ -462,12 +464,149 @@ func (app *application) handleEditListingPage(w http.ResponseWriter, r *http.Req
 		Longitude:    property.Longitude,
 		PropertyType: property.PropertyType,
 		Price:        property.Price,
-		Thumbnail:    property.Banner,
-		Pictures:     property.Pictures,
+		Thumbnail:    "",
 		Description:  property.Description,
+		Pictures:     []string{},
 	}
 	app.render(w, r, http.StatusOK, page, data)
 }
 
 func (app *application) handleEditListing(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+
+	property, err := app.storage.Property.GetByID(id)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	if property.UserID != userID {
+		app.clientError(w, http.StatusForbidden)
+		return
+	}
+
+	form := editListingForm{
+		Title:        r.FormValue("title"),
+		PropertyType: r.FormValue("propertyType"),
+		Location:     r.FormValue("location"),
+		Thumbnail:    strings.TrimSpace(r.FormValue("thumbnail")),
+		Description:  r.FormValue("description"),
+	}
+	pictures := r.Form["picture"]
+
+	priceString := r.FormValue("price")
+	latitudeString := r.FormValue("latitude")
+	longitudeString := r.FormValue("longitude")
+
+	// validate form
+	form.CheckField(validator.NotBlank(priceString), "price", "This field can not be blank")
+	form.CheckField(validator.NotBlank(latitudeString), "latitude", "This field can not be blank")
+	form.CheckField(validator.NotBlank(longitudeString), "longitude", "This field can not be blank")
+	form.CheckField(validator.NotBlank(form.Title), "title", "This field can not be blank")
+	form.CheckField(validator.NotBlank(form.Location), "location", "This field can not be blank")
+	form.CheckField(validator.NotBlank(form.Description), "description", "This field can not be blank")
+	form.CheckField(validator.PermittedValue(form.PropertyType, propertyTypes...), "propertyType", "Invalid property type")
+
+	for _, picture := range pictures {
+		if strings.TrimSpace(picture) != "" {
+			form.Pictures = append(form.Pictures, picture)
+		}
+	}
+
+	if strings.TrimSpace(priceString) != "" {
+		price, err := strconv.Atoi(priceString)
+		if err != nil {
+			app.logger.Error(err.Error())
+			app.clientError(w, http.StatusBadRequest)
+			return
+		}
+		form.Price = int64(price)
+		form.CheckField(form.Price > 0, "price", "Price must greater than 0")
+	}
+	if strings.TrimSpace(latitudeString) != "" {
+		latitude, err := strconv.ParseFloat(latitudeString, 64)
+		if err != nil {
+			form.CheckField(false, "latitude", "Invalid input")
+		} else {
+			// TODO: maybe check whats valid latitude/longitude
+			form.Latitude = latitude
+		}
+	}
+	if strings.TrimSpace(longitudeString) != "" {
+		longitude, err := strconv.ParseFloat(longitudeString, 64)
+		if err != nil {
+			form.CheckField(false, "longitude", "Invalid input")
+		} else {
+			// TODO: maybe check whats valid latitude/longitude
+			form.Longitude = longitude
+		}
+	}
+
+	page := "./ui/templates/pages/property_edit.html"
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		data.Listing = property
+		app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		return
+	}
+
+	// move files from tmpDir to uploadDir
+	// move thumbnail image
+	if form.Thumbnail != "" {
+		thumbnail := filepath.Base(form.Thumbnail)
+		oldImagePath := filepath.Join(tmpDir, thumbnail)
+		newImagePath := filepath.Join(uploadDir, thumbnail)
+		if err := os.Rename(oldImagePath, newImagePath); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				app.clientError(w, http.StatusBadRequest)
+				return
+			}
+			app.serverError(w, r, err)
+			return
+		}
+	}
+
+	// move additional pictures
+	for _, picture := range form.Pictures {
+		picture = filepath.Base(picture)
+		oldImagePath := filepath.Join(tmpDir, picture)
+		newImagePath := filepath.Join(uploadDir, picture)
+		if err := os.Rename(oldImagePath, newImagePath); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				app.clientError(w, http.StatusBadRequest)
+				return
+			}
+			app.serverError(w, r, err)
+			return
+		}
+	}
+	property.Title = form.Title
+	property.Location = form.Location
+	property.Latitude = form.Latitude
+	property.Longitude = form.Longitude
+	property.PropertyType = form.PropertyType
+	property.Price = form.Price
+	property.Description = form.Description
+	if form.Thumbnail != "" {
+		property.Banner = form.Thumbnail
+	}
+	property.Pictures = form.Pictures
+
+	if err := app.storage.Property.Update(property); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	redirectURL := fmt.Sprintf("/listings/view/%d", property.ID)
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Updated property")
+	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }

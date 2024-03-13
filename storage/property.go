@@ -512,3 +512,76 @@ func (s *PropertyStorage) GetMinMaxPrice() (int64, int64, error) {
 
 	return min, max, nil
 }
+
+func (s *PropertyStorage) Update(property Property) error {
+	tx, err := s.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	queryUpdateListing := `
+      update listings
+      set
+        title = $1, 
+        price = $2,
+        description = $3,
+        banner = $4,
+        location = $5,
+        property_type = $6,
+        latitude = $7,
+        longitude = $8
+      where
+        id = $9 and user_id = $10
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	args := []any{
+		property.Title,
+		property.Price,
+		property.Description,
+		property.Banner,
+		property.Location,
+		property.PropertyType,
+		property.Latitude,
+		property.Longitude,
+		property.ID,
+		property.UserID,
+	}
+	_, err = tx.ExecContext(ctx, queryUpdateListing, args...)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if len(property.Pictures) > 0 {
+		queryInsertPictures := "insert into pictures (listing_id, url) values"
+		for i := range len(property.Pictures) {
+			if i != 0 {
+				queryInsertPictures += ","
+			}
+			queryInsertPictures += fmt.Sprintf(" ($1, $%d)", i+2)
+		}
+		stmt, err := tx.Prepare(queryInsertPictures)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		args := []any{property.ID}
+		for _, picture := range property.Pictures {
+			args = append(args, picture)
+		}
+		_, err = stmt.ExecContext(ctx, args...)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -64,7 +64,5 @@ func (app *application) routes() http.Handler {
 	r.Handler(http.MethodGet, "/ws/:id", protected.ThenFunc(app.handleWSChat))
 
 	standard := alice.New(app.metrics, app.methodOverride, app.requestID, app.logRequest)
-	// standard := alice.New(app.metrics, app.methodOverride)
 	return standard.Then(r)
-	// return r
 }
