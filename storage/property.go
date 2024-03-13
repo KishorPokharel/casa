@@ -585,3 +585,19 @@ func (s *PropertyStorage) Update(property Property) error {
 
 	return nil
 }
+
+func (s *PropertyStorage) DeletePicture(propertyID int64, pictureID string) error {
+	query := `
+      update pictures
+      set deleted_at = now()
+      where listing_id = $1 and url = $2
+    `
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	_, err := s.DB.ExecContext(ctx, query, propertyID, pictureID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

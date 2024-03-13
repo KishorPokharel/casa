@@ -50,10 +50,25 @@
   {{ if gt (len .Listing.Pictures) 0 }}
   <h5>More images of this listing</h5>
   <div class="listing-image-grid">
-    {{ range .Listing.Pictures }}
-    <a href="/uploads/{{.}}" data-lightbox="listing-images">
-      <img src="/uploads/{{.}}" alt="">
+    {{ range $idx, $val := .Listing.Pictures }}
+    <div>
+      <a href="/uploads/{{.}}" data-lightbox="listing-images">
+        <img class="more-image" src="/uploads/{{.}}" alt="">
       </a>
+      {{ if eq $.User.ID $.Listing.UserID }}
+      <div class="delete-btn-wrapper">
+        <a class="delete-image-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        </a>
+        <form hidden 
+          action="/listings/delete/{{$.Listing.ID}}/picture/{{.}}"
+          method="POST">
+          <input type="hidden" name="_method" value="DELETE">
+          <button hidden type="submit">Delete</button>
+        </form>
+      </div>
+      {{ end }} 
+    </div>
     {{ end }}
   </div>
   {{ end }}
@@ -73,6 +88,17 @@
 {{ define "scripts" }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js" ></script>
   <script>
+    // Delete Image
+    const deleteImageBtns = document.querySelectorAll(".delete-image-btn");
+    deleteImageBtns.forEach(btn => {
+          btn.addEventListener("click", (e) => {
+                const parentEl = e.target.closest(".delete-btn-wrapper");
+                const formSubmitBtn = parentEl.querySelector("button[type=submit]");
+                formSubmitBtn.click();
+          });
+    });
+
+    // Render Map
     var map = L.map('my-map').setView([{{.Listing.Latitude}},{{.Listing.Longitude}} ], 20);
     var myAPIKey = "d76967abd63741b894c6517816a7c8ec";
     var isRetina = L.Browser.retina;
@@ -86,5 +112,6 @@
         maxZoom: 20,
         id: 'osm-bright',
     }).addTo(map);
+
   </script>
 {{ end }}

@@ -14,6 +14,7 @@ import (
 
 	"github.com/KishorPokharel/casa/storage"
 	"github.com/KishorPokharel/casa/validator"
+	"github.com/julienschmidt/httprouter"
 )
 
 func (app *application) handleHomePage(w http.ResponseWriter, r *http.Request) {
@@ -608,5 +609,42 @@ func (app *application) handleEditListing(w http.ResponseWriter, r *http.Request
 
 	redirectURL := fmt.Sprintf("/listings/view/%d", property.ID)
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "Updated property")
+	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+}
+
+func (app *application) handleDeletePicture(w http.ResponseWriter, r *http.Request) {
+	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+	propertyID, err := app.readIDParam(r)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+	params := httprouter.ParamsFromContext(r.Context())
+	pictureID := params.ByName("picture")
+
+	property, err := app.storage.Property.GetByID(propertyID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	if property.UserID != userID {
+		app.clientError(w, http.StatusForbidden)
+		return
+	}
+	if !slices.Contains(property.Pictures, pictureID) {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	if err := app.storage.Property.DeletePicture(propertyID, pictureID); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Image Deleted")
+	redirectURL := fmt.Sprintf("/listings/view/%d", propertyID)
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }

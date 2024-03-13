@@ -51,7 +51,12 @@
   object-fit: cover;
 }
 
-.listing-image-grid > a > img {
+.listing-image-grid {
+  display: flex;
+  gap: 8px;
+}
+
+.more-image {
   border: 1px solid transparent;
   width: 150px;
   border-radius: 4px;
@@ -59,8 +64,21 @@
   object-fit: cover;
 }
 
-.listing-image-grid > a > img:hover {
+.more-image:hover {
   border: 1px solid steelblue;
+}
+
+.delete-image-btn {
+  cursor: pointer;
+}
+
+.delete-image-btn svg {
+  color: red;
+}
+
+.delete-btn-wrapper {
+  display: flex;
+  justify-content: center;
 }
 
 .form {
@@ -151,6 +169,8 @@
   flex-direction: column;
   align-items: flex-end;
 }
+
+/* END CHAT STYLES */
 
 /* map buttons fix */
 .lb-close[role=button],

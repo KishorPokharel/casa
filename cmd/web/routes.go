@@ -58,6 +58,7 @@ func (app *application) routes() http.Handler {
 
 	r.Handler(http.MethodPost, "/listings/save/:id", protected.ThenFunc(app.handleSaveListing))
 	r.Handler(http.MethodDelete, "/listings/unsave/:id", protected.ThenFunc(app.handleUnsaveListing))
+	r.Handler(http.MethodDelete, "/listings/delete/:id/picture/:picture", protected.ThenFunc(app.handleDeletePicture))
 	r.Handler(http.MethodPost, "/message/:id", protected.ThenFunc(app.handleMessageOwner))
 	r.Handler(http.MethodGet, "/chat/:id", protected.ThenFunc(app.handleChatPage))
 	r.Handler(http.MethodGet, "/chat-all", protected.ThenFunc(app.handleAllChatsPage))
