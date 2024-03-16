@@ -23,7 +23,7 @@ tasks:
     desc: 'build and run the application'
     cmds:
       - task: build
-      - CASA_DB_DSN=$CASA_DB_DSN ./bin/casa
+      - CASA_DB_DSN=$CASA_DB_DSN SMTP_USERNAME=$SMTP_USERNAME SMTP_PASSWORD=$SMTP_PASSWORD ./bin/casa
 
   dev:
     desc: 'build run and watch'
