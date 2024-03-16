@@ -10,10 +10,17 @@ create table if not exists users (
     version integer not null default 1
 );
 
+create table if not exists tokens (
+    hash bytea primary key,
+    user_id bigint not null references users(id),
+    expiry timestamp(0) with time zone not null,
+    scope text not null
+);
+
 create table if not exists sessions (
-  token text primary key,
-  data bytea not null,
-  expiry timestamptz not null
+    token text primary key,
+    data bytea not null,
+    expiry timestamptz not null
 );
 
 create index sessions_expiry_idx on sessions (expiry);
@@ -54,13 +61,13 @@ create table if not exists rooms (
 );
 
 create table if not exists messages (
-  user_id bigint references users(id) not null,
-  room_id uuid references rooms(id) not null,
-  msg text not null,
-  created_at timestamptz(0) not null default now()
+    user_id bigint references users(id) not null,
+    room_id uuid references rooms(id) not null,
+    msg text not null,
+    created_at timestamptz(0) not null default now()
 );
 
 create table if not exists users_rooms (
-  user_id bigint references users(id) not null,
-  room_id uuid references rooms(id) not null
+    user_id bigint references users(id) not null,
+    room_id uuid references rooms(id) not null
 );

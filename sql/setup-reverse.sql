@@ -1,3 +1,4 @@
+drop table if exists tokens;
 drop table if exists favorites;
 drop table if exists pictures;
 drop table if exists messages;
