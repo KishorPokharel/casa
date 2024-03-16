@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
 	"errors"
 	"time"
@@ -162,11 +163,33 @@ func (s *UserStorage) Get(id int64) (User, error) {
 	return user, nil
 }
 
-func (m *UserStorage) PasswordUpdate(id int64, currentPassword, newPassword string) error {
+func (s *UserStorage) GetByEmail(email string) (User, error) {
+	query := `select id, username, email, phone, created_at from users where email = $1`
+
+	var user User
+	var phone sql.Null[string]
+	err := s.DB.QueryRow(query, email).Scan(&user.ID, &user.Username, &user.Email, &phone, &user.CreatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return User{}, ErrNoRecord
+		} else {
+			return User{}, err
+		}
+	}
+	if phone.Valid {
+		user.Phone = phone.V
+	} else {
+		user.Phone = ""
+	}
+
+	return user, nil
+}
+
+func (s *UserStorage) PasswordUpdate(id int64, currentPassword, newPassword string) error {
 
 	var currentHashedPassword []byte
 	query := "select password_hash from users where id = $1"
-	err := m.DB.QueryRow(query, id).Scan(&currentHashedPassword)
+	err := s.DB.QueryRow(query, id).Scan(&currentHashedPassword)
 	if err != nil {
 		return err
 	}
@@ -186,7 +209,53 @@ func (m *UserStorage) PasswordUpdate(id int64, currentPassword, newPassword stri
 	}
 
 	query = "update users set password_hash = $1 WHERE id = $2"
-	_, err = m.DB.Exec(query, string(newHashedPassword), id)
+	_, err = s.DB.Exec(query, string(newHashedPassword), id)
+
+	return err
+}
+
+func (s *UserStorage) GetForToken(tokenScope, tokenPlainText string) (User, error) {
+	tokenHash := sha256.Sum256([]byte(tokenPlainText))
+	query := `
+		select users.id, users.created_at, users.username, users.email, users.password_hash
+		from users
+		inner join tokens
+		on users.id = tokens.user_id
+		where tokens.hash = $1
+		and tokens.scope = $2
+		and tokens.expiry > $3`
+
+	args := []any{tokenHash[:], tokenScope, time.Now()}
+	var user User
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err := s.DB.QueryRowContext(ctx, query, args...).Scan(
+		&user.ID,
+		&user.CreatedAt,
+		&user.Username,
+		&user.Email,
+		&user.Password.hash,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return User{}, ErrNoRecord
+		default:
+			return User{}, err
+		}
+	}
+	return user, nil
+}
+
+func (s *UserStorage) PasswordReset(id int64, newPassword string) error {
+	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), 12)
+	if err != nil {
+		return err
+	}
+
+	query := "update users set password_hash = $1 WHERE id = $2"
+	_, err = s.DB.Exec(query, string(newHashedPassword), id)
 
 	return err
 }
