@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/KishorPokharel/casa/mailer"
 	"github.com/KishorPokharel/casa/storage"
 	"github.com/alexedwards/scs/v2"
 )
@@ -16,6 +17,7 @@ type application struct {
 	storage        storage.Storage
 	sessionManager *scs.SessionManager
 	hub            *hub
+	mailer         mailer.Mailer
 }
 
 func (app *application) run() error {
