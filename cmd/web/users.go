@@ -4,9 +4,11 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/KishorPokharel/casa/storage"
 	"github.com/KishorPokharel/casa/validator"
+	"github.com/julienschmidt/httprouter"
 )
 
 type userRegisterForm struct {
@@ -317,4 +319,148 @@ func (app *application) handleChangePassword(w http.ResponseWriter, r *http.Requ
 
 	app.sessionManager.Put(r.Context(), sessionFlashKey, "Password Changed")
 	http.Redirect(w, r, "/profile", http.StatusSeeOther)
+}
+
+type forgotPasswordForm struct {
+	Email string
+	validator.Validator
+}
+
+func (app *application) handleForgotPasswordPage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/forgot_password.html"
+	form := forgotPasswordForm{}
+	data := app.newTemplateData(r)
+	data.Form = form
+	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handleForgotPassword(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form := forgotPasswordForm{
+		Email: r.FormValue("email"),
+	}
+
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field can not be blank")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "This field must be a valid email address")
+
+	page := "./ui/templates/pages/forgot_password.html"
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		return
+	}
+
+	user, err := app.storage.Users.GetByEmail(form.Email)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			form.AddFieldError("email", "No user with provided email.")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusBadRequest, page, data)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	// create a password reset token for email
+	token, err := app.storage.Tokens.New(user.ID, 10*time.Minute, storage.ScopePasswordReset)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	// use token and email to send mail
+	app.background(func() {
+		data := map[string]any{
+			"passwordResetToken": token.PlainText,
+			"port":               app.config.port,
+		}
+		err = app.mailer.Send(user.Email, "./mailer/templates/password-reset.tmpl", data)
+		if err != nil {
+			app.logger.Error(err.Error())
+		}
+	})
+
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Check your email to reset your password to continue.")
+	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+}
+
+type passwordResetForm struct {
+	Token              string
+	NewPassword        string
+	ConfirmNewPassword string
+	validator.Validator
+}
+
+func (app *application) handlePasswordResetPage(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	token := params.ByName("token")
+
+	page := "./ui/templates/pages/password_reset.html"
+	data := app.newTemplateData(r)
+	data.Form = passwordResetForm{
+		Token: token,
+	}
+	app.render(w, r, http.StatusOK, page, data)
+}
+
+func (app *application) handlePasswordReset(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	token := params.ByName("token")
+
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form := passwordResetForm{
+		Token:              token,
+		NewPassword:        r.FormValue("newPassword"),
+		ConfirmNewPassword: r.FormValue("confirmNewPassword"),
+	}
+
+	form.CheckField(validator.NotBlank(form.NewPassword), "newPassword", "This field cannot be blank")
+	form.CheckField(validator.MinChars(form.NewPassword, 10), "newPassword", "This field must be at least 10 characters long")
+	form.CheckField(validator.NotBlank(form.ConfirmNewPassword), "confirmNewPassword", "This field cannot be blank")
+	form.CheckField(form.NewPassword == form.ConfirmNewPassword, "confirmNewPassword", "Passwords do not match")
+
+	page := "./ui/templates/pages/password_reset.html"
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, page, data)
+		return
+	}
+
+	user, err := app.storage.Users.GetForToken(storage.ScopePasswordReset, form.Token)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			form.AddNonFieldError("Invalid or Expired password reset token")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusUnprocessableEntity, page, data)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	if err := app.storage.Users.PasswordReset(user.ID, form.NewPassword); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = app.storage.Tokens.DeleteAllForUser(storage.ScopePasswordReset, user.ID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), sessionFlashKey, "Your password was reset")
+	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }

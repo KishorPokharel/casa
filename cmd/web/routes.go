@@ -32,6 +32,10 @@ func (app *application) routes() http.Handler {
 	r.Handler(http.MethodPost, "/users/register", anonymous.ThenFunc(app.handleUserRegister))
 	r.Handler(http.MethodGet, "/users/login", anonymous.ThenFunc(app.handleLoginPage))
 	r.Handler(http.MethodPost, "/users/login", anonymous.ThenFunc(app.handleLogin))
+	r.Handler(http.MethodGet, "/forgot-password", anonymous.ThenFunc(app.handleForgotPasswordPage))
+	r.Handler(http.MethodPost, "/forgot-password", anonymous.ThenFunc(app.handleForgotPassword))
+	r.Handler(http.MethodGet, "/password-reset/:token", anonymous.ThenFunc(app.handlePasswordResetPage))
+	r.Handler(http.MethodPost, "/password-reset/:token", anonymous.ThenFunc(app.handlePasswordReset))
 
 	// protected routes
 	protected := dynamic.Append(app.requireAuthentication)
