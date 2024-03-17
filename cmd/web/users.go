@@ -223,6 +223,7 @@ func (app *application) handleProfileViewPage(w http.ResponseWriter, r *http.Req
 		http.Redirect(w, r, fmt.Sprintf("/profile/view/%d", userID), http.StatusSeeOther)
 		return
 	}
+
 	listings, err := app.storage.Property.GetAllForUser(userID)
 	if err != nil {
 		app.serverError(w, r, err)
