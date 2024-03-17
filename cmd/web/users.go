@@ -190,6 +190,42 @@ func (app *application) handleProfilePage(w http.ResponseWriter, r *http.Request
 	app.render(w, r, http.StatusOK, page, data)
 }
 
+func (app *application) handleProfileViewPage(w http.ResponseWriter, r *http.Request) {
+	page := "./ui/templates/pages/profile_view.html"
+	userID, err := app.readIDParam(r)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+	user, err := app.storage.Users.Get(userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		}
+		app.serverError(w, r, err)
+		return
+	}
+	if app.isAuthenticated(r) {
+		userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)
+		if userID == user.ID {
+			http.Redirect(w, r, "/profile", http.StatusSeeOther)
+			return
+		}
+	}
+	data := app.newTemplateData(r)
+	data.User = user
+
+	listings, err := app.storage.Property.GetAllForUser(userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data.Listings = listings
+
+	app.render(w, r, http.StatusOK, page, data)
+}
+
 func (app *application) handleProfileEditPage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/profile_edit.html"
 	userID := app.sessionManager.GetInt64(r.Context(), sessionAuthKey)

@@ -25,6 +25,7 @@ func (app *application) routes() http.Handler {
 	r.Handler(http.MethodGet, "/search", dynamic.ThenFunc(app.handleSearchPage))
 	r.Handler(http.MethodGet, "/listings/view/:id", dynamic.ThenFunc(app.handleSingleListingPage))
 	r.Handler(http.MethodGet, "/locations", dynamic.ThenFunc(app.handleGetAllLocations))
+	r.Handler(http.MethodGet, "/profile/view/:id", dynamic.ThenFunc(app.handleProfileViewPage))
 
 	anonymous := dynamic.Append(app.requireAnonymous)
 
