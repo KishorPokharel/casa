@@ -8,12 +8,15 @@
     <p>Nothing to see here yet.</p>
     <a href="/search">Explore Properties to save</a>
   {{ else }}
+  <small>{{ len .SavedListings }} result(s)</small>
+  <br>
+  <br>
   <div class="listings listings--saved">
   {{ range .SavedListings }}
   <div class="listing listing__{{.ID}}">
       <img onclick="location.href='/listings/view/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
       <div class="listing_body">
-        <a href="/search?propertyType={{.PropertyType}}" class="chip">{{ .PropertyType }}</a>
+        <a href="?propertyType={{.PropertyType}}" class="chip">{{ .PropertyType }}</a>
         <hgroup>
           <div class="location">
             <!-- <img src="/images/map-pin.svg" alt=""> -->

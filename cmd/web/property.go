@@ -367,13 +367,29 @@ func (app *application) handleSavedListingsPage(w http.ResponseWriter, r *http.R
 	data := app.newTemplateData(r)
 	data.User = user
 
+	ptype := r.URL.Query().Get("propertyType")
+	if ptype != "" && !slices.Contains(propertyTypes, ptype) {
+		http.Redirect(w, r, "/listings/saved", http.StatusSeeOther)
+		return
+	}
+
 	// get my saved listings
 	savedListings, err := app.storage.Property.GetSavedListings(userID)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
-	data.SavedListings = savedListings
+	if ptype != "" {
+		filtered := []storage.Property{}
+		for _, val := range savedListings {
+			if val.PropertyType == ptype {
+				filtered = append(filtered, val)
+			}
+		}
+		data.SavedListings = filtered
+	} else {
+		data.SavedListings = savedListings
+	}
 
 	app.render(w, r, http.StatusOK, page, data)
 }
