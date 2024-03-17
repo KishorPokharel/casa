@@ -73,7 +73,7 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 	query := `
         select 
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.created_at, users.id, users.username
+            listings.price, listings.property_type, listings.created_at, users.id, users.username
         from
             listings
         join
@@ -92,7 +92,7 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username)
 		if err != nil {
 			return nil, err
 		}
@@ -225,7 +225,7 @@ func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
 	query := `
         select
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.created_at, users.id, users.username,
+            listings.price, listings.property_type, listings.created_at, users.id, users.username,
             ts_rank(to_tsvector('simple', listings.location), plainto_tsquery($1)) * 3 +
             ts_rank(to_tsvector('simple', listings.title), plainto_tsquery($1)) * 2 +
             ts_rank(to_tsvector('simple', listings.description), plainto_tsquery($1)) * 1 as rank
@@ -254,7 +254,7 @@ func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username, &p.Rank)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username, &p.Rank)
 		if err != nil {
 			return nil, err
 		}
