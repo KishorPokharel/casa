@@ -407,7 +407,7 @@ func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
 	query := `
         select 
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.created_at, users.id, users.username
+            listings.price, listings.property_type, listings.created_at, users.id, users.username
         from
             listings
         join
@@ -430,7 +430,7 @@ func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username)
 		if err != nil {
 			return nil, err
 		}
@@ -443,7 +443,7 @@ func (s *PropertyStorage) GetAllForUser(userID int64) ([]Property, error) {
 	query := `
         select 
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.created_at, users.id, users.username
+            listings.price, listings.property_type, listings.created_at, users.id, users.username
         from
             listings
         join
@@ -464,7 +464,7 @@ func (s *PropertyStorage) GetAllForUser(userID int64) ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.CreatedAt, &p.UserID, &p.Username)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username)
 		if err != nil {
 			return nil, err
 		}
