@@ -3,28 +3,36 @@
 {{ define "main" }}
 <section>
   <h4>Listings by {{.User.Username}}</h4>
-  <div class="listings listings--saved">
-  {{ range .Listings }}
-  <div class="listing listing__{{.ID}}">
-      <img onclick="location.href='/listings/view/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
-      <div class="listing_body">
-        <a href="/search?propertyType={{.PropertyType}}" class="chip">{{ .PropertyType }}</a>
-        <hgroup>
-          <div class="location">
-            <!-- <img src="/images/map-pin.svg" alt=""> -->
-            <small>{{ .Location }}</small>
-          </div>
-          <h6><a href="/listings/view/{{.ID}}">{{ .Title }}</a></h6>
-          <p>{{ formatPrice .Price }}</p>
-        </hgroup>
-        <hr>
-        <small>
-          {{ humanDate .CreatedAt }} <br> Posted by <a href="/profile/view/{{.UserID}}">{{ .Username }}</a>
-        </small>
+
+  {{ if eq (len .Listings) 0 }}
+    <p>No Listings</p>
+    {{ else }}
+    <small>{{ len .Listings }} result(s)</small>
+    <br>
+    <br>
+    <div class="listings listings--saved">
+    {{ range .Listings }}
+      <div class="listing listing__{{.ID}}">
+        <img onclick="location.href='/listings/view/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
+        <div class="listing_body">
+          <a href="?propertyType={{.PropertyType}}" class="chip">{{ .PropertyType }}</a>
+          <hgroup>
+            <div class="location">
+              <!-- <img src="/images/map-pin.svg" alt=""> -->
+              <small>{{ .Location }}</small>
+            </div>
+            <h6><a href="/listings/view/{{.ID}}">{{ .Title }}</a></h6>
+            <p>{{ formatPrice .Price }}</p>
+          </hgroup>
+          <hr>
+          <small>
+            {{ humanDate .CreatedAt }} <br> Posted by <a href="/profile/view/{{.UserID}}">{{ .Username }}</a>
+          </small>
+        </div>
       </div>
+    {{ end }}
     </div>
   {{ end }}
-  </div>
 </section>
 
 {{ end }}

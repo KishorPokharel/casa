@@ -6,7 +6,7 @@
   <div class="chat-container">
     <div class="message-box">
       <div class="message-box-bar">
-        <p><a href="/profile/{{.ChatOtherUser.ID}}">{{ .ChatOtherUser.Username }}</a></p>
+        <p><a href="/profile/view/{{.ChatOtherUser.ID}}">{{ .ChatOtherUser.Username }}</a></p>
       </div>
       <div class="messages">
         {{ range .Messages }}
