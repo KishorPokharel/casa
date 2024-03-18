@@ -14,7 +14,8 @@ $(function () {
     return;
   } else {
     let protocol = window.location.protocol === 'http:' ? 'ws:' : 'wss:';
-    socket = new WebSocket(`${protocol}//localhost:3000/ws/${roomID}`);
+    let hostport = window.location.host;
+    socket = new WebSocket(`${protocol}//${hostport}/ws/${roomID}`);
     socket.onclose = function () {
       alert('Connection closed by server');
     };
