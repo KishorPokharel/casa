@@ -229,6 +229,13 @@ func (app *application) handleProfileViewPage(w http.ResponseWriter, r *http.Req
 		app.serverError(w, r, err)
 		return
 	}
+	availableProperties := []storage.Property{}
+	for _, val := range listings {
+		if val.Available {
+			availableProperties = append(availableProperties, val)
+		}
+	}
+	listings = availableProperties
 	if ptype != "" {
 		filtered := []storage.Property{}
 		for _, val := range listings {
