@@ -460,6 +460,7 @@ type editListingForm struct {
 	Longitude    float64
 	PropertyType string
 	Price        int64
+	Available    bool
 	Thumbnail    string
 	Description  string
 	Pictures     []string
@@ -497,6 +498,7 @@ func (app *application) handleEditListingPage(w http.ResponseWriter, r *http.Req
 		Longitude:    property.Longitude,
 		PropertyType: property.PropertyType,
 		Price:        property.Price,
+		Available:    property.Available,
 		Thumbnail:    "",
 		Description:  property.Description,
 		Pictures:     []string{},
@@ -538,6 +540,9 @@ func (app *application) handleEditListing(w http.ResponseWriter, r *http.Request
 	priceString := r.FormValue("price")
 	latitudeString := r.FormValue("latitude")
 	longitudeString := r.FormValue("longitude")
+
+	availableString := r.FormValue("available")
+	form.Available = availableString != ""
 
 	// validate form
 	form.CheckField(validator.NotBlank(priceString), "price", "This field can not be blank")
@@ -628,6 +633,7 @@ func (app *application) handleEditListing(w http.ResponseWriter, r *http.Request
 	property.Longitude = form.Longitude
 	property.PropertyType = form.PropertyType
 	property.Price = form.Price
+	property.Available = form.Available
 	property.Description = form.Description
 	if form.Thumbnail != "" {
 		property.Banner = form.Thumbnail
