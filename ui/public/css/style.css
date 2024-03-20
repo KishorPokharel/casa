@@ -12,6 +12,16 @@
   cursor: pointer;
 }
 
+.chip-red {
+  background-color: red;
+  cursor: default;
+}
+
+.chip-green {
+  background-color: green;
+  cursor: default;
+}
+
 .listings > .listing:only-child {
   width: min(300px, 100%);
 }

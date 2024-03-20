@@ -10,6 +10,11 @@
 {{ define "main" }}
 
 <section class="single-listing listing__{{.Listing.ID}}">
+  {{ if .Listing.Available }}
+  <!-- <small class="chip chip-green">Available</small> -->
+  {{else}}
+  <small class="chip chip-red">Unavailable</small>
+  {{end}}
   <hgroup>
     <h3>{{ .Listing.Title }}</h3>
     <p>{{ formatPrice .Listing.Price }} | {{ .Listing.Location }}</p>
