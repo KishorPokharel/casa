@@ -399,7 +399,7 @@ func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
 	query := `
         select 
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.property_type, listings.created_at, users.id, users.username
+            listings.price, listings.available, listings.property_type, listings.created_at, users.id, users.username
         from
             listings
         join
@@ -407,7 +407,7 @@ func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
         join
             users on listings.user_id = users.id
         where
-            favorites.user_id = $1 and listings.available = true
+            favorites.user_id = $1
         order by favorites.created_at desc
     `
 
@@ -422,7 +422,7 @@ func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username)
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.Available, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username)
 		if err != nil {
 			return nil, err
 		}

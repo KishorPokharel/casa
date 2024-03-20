@@ -15,6 +15,10 @@
   <div class="listing listing__{{.ID}}">
       <img onclick="location.href='/listings/view/{{.ID}}'" src="/uploads/{{.Banner}}" alt="Image {{.Title}}">
       <div class="listing_body">
+        {{ if .Available }}
+        {{ else }}
+        <small class="chip chip-red">Unavailable</small>
+        {{ end }}
         <a href="?propertyType={{.PropertyType}}" class="chip">{{ .PropertyType }}</a>
         <hgroup>
           <div class="location">
