@@ -7,6 +7,13 @@
       <form action="/listings/edit/{{.Listing.ID}}" method="post" >
       <input type="hidden" name="_method" value="PUT">
       <div>
+        <label>
+          <input name="available" {{if .Form.Available}}checked{{end}} type="checkbox" role="switch" />
+          Available
+        </label>
+        <br>
+      </div>
+      <div>
         <label for="title">Title</label>
         <input 
           {{ with .Form.FieldErrors.title }}
