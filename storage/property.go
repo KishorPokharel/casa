@@ -12,20 +12,6 @@ import (
 
 var ErrDuplicateSave = errors.New("listing is already saved")
 
-// type Property struct {
-// 	ID          int64
-// 	UserID      int64
-// 	Banner      string
-// 	Location    string
-// 	Title       string
-// 	Description string
-// 	Price       int64
-// 	Username    string
-// 	CreatedAt   time.Time
-// 	Rank        float64
-// 	Saved       bool
-// }
-
 type Property struct {
 	ID           int64
 	UserID       int64
@@ -37,6 +23,7 @@ type Property struct {
 	Banner       string
 	Location     string
 	Price        int64
+	Available    bool
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 
@@ -78,6 +65,7 @@ func (s *PropertyStorage) GetAll() ([]Property, error) {
             listings
         join
             users on listings.user_id = users.id
+        where listings.available = true
         order by listings.created_at desc
     `
 
@@ -197,6 +185,7 @@ func (s *PropertyStorage) Search(searchQuery string) ([]Property, error) {
             users on listings.user_id = users.id
         where
             (to_tsvector('simple', location || ' ' || description || ' ' || title) @@ plainto_tsquery('simple', $1) or $1='')
+        and listings.available = true
         order by rank desc
     `
 	args := []any{searchQuery}
@@ -239,6 +228,8 @@ func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
             (listings.property_type = $2 or $2='')
         and
             ((listings.price >= $3 and listings.price <= $4) or ($3 = 0 and $4 = 0))
+        and
+            listings.available = true
         order by rank desc
     `
 	args := []any{filter.Location, filter.PropertyType, filter.MinPrice, filter.MaxPrice}
@@ -267,7 +258,7 @@ func (s *PropertyStorage) GetByID(id int64) (Property, error) {
 	query := `
         select
             listings.id, listings.title, listings.description, listings.banner, listings.location, listings.property_type,
-            listings.price, listings.latitude, listings.longitude, listings.created_at, users.id, users.username
+            listings.price, listings.available, listings.latitude, listings.longitude, listings.created_at, users.id, users.username
         from
             listings
         join
@@ -290,6 +281,7 @@ func (s *PropertyStorage) GetByID(id int64) (Property, error) {
 		&p.Location,
 		&p.PropertyType,
 		&p.Price,
+		&p.Available,
 		&p.Latitude,
 		&p.Longitude,
 		&p.CreatedAt,
@@ -415,7 +407,7 @@ func (s *PropertyStorage) GetSavedListings(userID int64) ([]Property, error) {
         join
             users on listings.user_id = users.id
         where
-            favorites.user_id = $1
+            favorites.user_id = $1 and listings.available = true
         order by favorites.created_at desc
     `
 
@@ -443,7 +435,7 @@ func (s *PropertyStorage) GetAllForUser(userID int64) ([]Property, error) {
 	query := `
         select 
             listings.id, listings.title, listings.description, listings.banner, listings.location,
-            listings.price, listings.property_type, listings.created_at, users.id, users.username
+            listings.price, listings.available, listings.property_type, listings.created_at, users.id, users.username
         from
             listings
         join
@@ -464,7 +456,19 @@ func (s *PropertyStorage) GetAllForUser(userID int64) ([]Property, error) {
 	listings := []Property{}
 	for rows.Next() {
 		p := Property{}
-		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username)
+		err := rows.Scan(
+			&p.ID,
+			&p.Title,
+			&p.Description,
+			&p.Banner,
+			&p.Location,
+			&p.Price,
+			&p.Available,
+			&p.PropertyType,
+			&p.CreatedAt,
+			&p.UserID,
+			&p.Username,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -529,9 +533,10 @@ func (s *PropertyStorage) Update(property Property) error {
         location = $5,
         property_type = $6,
         latitude = $7,
-        longitude = $8
+        longitude = $8,
+        available = $9
       where
-        id = $9 and user_id = $10
+        id = $10 and user_id = $11
     `
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -546,6 +551,7 @@ func (s *PropertyStorage) Update(property Property) error {
 		property.PropertyType,
 		property.Latitude,
 		property.Longitude,
+		property.Available,
 		property.ID,
 		property.UserID,
 	}
