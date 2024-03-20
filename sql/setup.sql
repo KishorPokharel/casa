@@ -36,6 +36,7 @@ create table if not exists listings (
     longitude double precision not null,
     property_type text not null check (property_type in ('land', 'house')),
     price int not null,
+    available boolean not null default true,
     created_at timestamp(0) with time zone not null default now(),
     updated_at timestamptz(0)
 );
