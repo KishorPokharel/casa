@@ -31,15 +31,15 @@ type MessageStorage struct {
 
 func (s *MessageStorage) GetAllRoomsForUser(userID int64) ([]Room, error) {
 	query := `
-        SELECT r.id AS room_id, u.username AS username
-        FROM rooms r
-        INNER JOIN users_rooms ur ON r.id = ur.room_id
-        INNER JOIN users u ON ur.user_id = u.id
-        WHERE ur.room_id IN (
-            SELECT room_id
-            FROM users_rooms
-            WHERE user_id = $1
-        ) AND ur.user_id != $1
+        select r.id as room_id, u.username as username
+        from rooms r
+        inner join users_rooms ur on r.id = ur.room_id
+        inner join users u on ur.user_id = u.id
+        where ur.room_id in (
+            select room_id
+            from users_rooms
+            where user_id = $1
+        ) and ur.user_id != $1
     `
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

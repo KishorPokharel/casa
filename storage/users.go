@@ -146,7 +146,13 @@ func (s *UserStorage) Get(id int64) (User, error) {
 
 	var user User
 	var phone sql.Null[string]
-	err := s.DB.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Email, &phone, &user.CreatedAt)
+	err := s.DB.QueryRow(query, id).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&phone,
+		&user.CreatedAt,
+	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return User{}, ErrNoRecord
@@ -168,7 +174,13 @@ func (s *UserStorage) GetByEmail(email string) (User, error) {
 
 	var user User
 	var phone sql.Null[string]
-	err := s.DB.QueryRow(query, email).Scan(&user.ID, &user.Username, &user.Email, &phone, &user.CreatedAt)
+	err := s.DB.QueryRow(query, email).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&phone,
+		&user.CreatedAt,
+	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return User{}, ErrNoRecord
