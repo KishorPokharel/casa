@@ -1,10 +1,10 @@
 module github.com/KishorPokharel/casa
 
-go 1.22.0
+go 1.22.1
 
 require (
 	github.com/alexedwards/scs/postgresstore v0.0.0-20231113091146-cef4b05350c8
-	github.com/alexedwards/scs/v2 v2.7.1-0.20240203174419-a38e822451b6
+	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-mail/mail/v2 v2.3.0

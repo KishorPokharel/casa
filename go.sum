@@ -2,6 +2,8 @@ github.com/alexedwards/scs/postgresstore v0.0.0-20231113091146-cef4b05350c8 h1:x
 github.com/alexedwards/scs/postgresstore v0.0.0-20231113091146-cef4b05350c8/go.mod h1:TDDdV/xnjj+/4zBQ9a2k+i2AbuAdY7SQjPUh5zoTZ3M=
 github.com/alexedwards/scs/v2 v2.7.1-0.20240203174419-a38e822451b6 h1:HCK4aaPYwLrRQkXn9XmrfHUMxn1Sq5vi7FFNx6YrpXA=
 github.com/alexedwards/scs/v2 v2.7.1-0.20240203174419-a38e822451b6/go.mod h1:ToaROZxyKukJKT/xLcVQAChi5k6+Pn1Gvmdl7h3RRj8=
+github.com/alexedwards/scs/v2 v2.8.0 h1:h31yUYoycPuL0zt14c0gd+oqxfRwIj6SOjHdKRZxhEw=
+github.com/alexedwards/scs/v2 v2.8.0/go.mod h1:ToaROZxyKukJKT/xLcVQAChi5k6+Pn1Gvmdl7h3RRj8=
 github.com/cockroachdb/apd v1.1.0 h1:3LFP3629v+1aKXU5Q37mxmRxX/pIu1nijXydLShEq5I=
 github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMeY4+DwBQ=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
