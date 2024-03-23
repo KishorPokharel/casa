@@ -288,7 +288,7 @@ func (app *application) handleSearchPage(w http.ResponseWriter, r *http.Request)
 	if form.MaxPrice == "" {
 		filter.MaxPrice = max
 	}
-	listings, err := app.storage.Property.Search2(filter)
+	listings, err := app.storage.Property.Search(filter)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

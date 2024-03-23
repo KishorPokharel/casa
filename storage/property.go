@@ -153,7 +153,7 @@ func (s *PropertyStorage) Insert(property Property) error {
 	return nil
 }
 
-func (s *PropertyStorage) Search2(filter PropertyFilter) ([]Property, error) {
+func (s *PropertyStorage) Search(filter PropertyFilter) ([]Property, error) {
 	query := `
         select
             listings.id, listings.title, listings.description, listings.banner, listings.location,
