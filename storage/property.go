@@ -443,7 +443,7 @@ func (s *PropertyStorage) GetAllLocations() ([]string, error) {
 }
 
 func (s *PropertyStorage) GetMinMaxPrice() (int64, int64, error) {
-	query := `select min(price), max(price) from listings`
+	query := `select coalesce(min(price), 0), coalesce(max(price), 0) from listings`
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
