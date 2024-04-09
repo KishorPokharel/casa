@@ -12,19 +12,25 @@ import (
 )
 
 type templateData struct {
-	CurrentYear       int
-	Flash             string
-	Form              any
-	IsAuthenticated   bool
-	User              storage.User
-	Listings          []storage.Property
-	Listing           storage.Property
-	SavedListings     []storage.Property
-	Rooms             []storage.Room
-	Messages          []storage.Message
-	ChatOtherUser     storage.User
-	AuthenticatedUser storage.User
-	RoomID            string
+	CurrentYear        int
+	Flash              string
+	Form               any
+	IsAuthenticated    bool
+	User               storage.User
+	Listings           []storage.Property
+	Listing            storage.Property
+	SavedListings      []storage.Property
+	Rooms              []storage.Room
+	Messages           []storage.Message
+	ChatOtherUser      storage.User
+	AuthenticatedUser  storage.User
+	RoomID             string
+	ListingsPagination Pagination
+}
+
+type Pagination struct {
+	CurrentPage int
+	TotalPage   int
 }
 
 func humanDate(t time.Time) string {
@@ -34,11 +40,21 @@ func humanDate(t time.Time) string {
 	return t.Format("02 Jan 2006 at 15:04")
 }
 
+func plus(a, b int) int {
+	return a + b
+}
+
+func minus(a, b int) int {
+	return a - b
+}
+
 var ac = accounting.Accounting{Symbol: "NPR ", Precision: 2, FormatNegative: "%s -%v"}
 
 var functions = template.FuncMap{
 	"humanDate":   humanDate,
 	"formatPrice": ac.FormatMoney,
+	"plus":        plus,
+	"minus":       minus,
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {

@@ -41,6 +41,11 @@ type PropertyFilter struct {
 	MaxPrice     int64
 }
 
+type Pagination struct {
+	Page  int
+	Limit int
+}
+
 type PropertyStorage struct {
 	DB *sql.DB
 }
@@ -54,6 +59,44 @@ func (s *PropertyStorage) ExistsWithID(id int64) (bool, error) {
 	var exists bool
 	err := s.DB.QueryRowContext(ctx, query, id).Scan(&exists)
 	return exists, err
+}
+
+func (s *PropertyStorage) GetAllWithPagination(page Pagination) ([]Property, error) {
+	query := `
+        select 
+            listings.id, listings.title, listings.description, listings.banner, listings.location,
+            listings.price, listings.property_type, listings.created_at, users.id, users.username
+        from
+            listings
+        join
+            users on listings.user_id = users.id
+        where listings.available = true
+        order by listings.created_at desc
+        limit $1 offset $2
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var offset int
+	if page.Page > 0 {
+		offset = page.Page*page.Limit - page.Limit
+	}
+	rows, err := s.DB.QueryContext(ctx, query, page.Limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	listings := []Property{}
+	for rows.Next() {
+		p := Property{}
+		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Banner, &p.Location, &p.Price, &p.PropertyType, &p.CreatedAt, &p.UserID, &p.Username)
+		if err != nil {
+			return nil, err
+		}
+		listings = append(listings, p)
+	}
+	return listings, nil
 }
 
 func (s *PropertyStorage) GetAll() ([]Property, error) {

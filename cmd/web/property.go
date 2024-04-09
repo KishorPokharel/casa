@@ -17,6 +17,35 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+func (app *application) handleHomePageWithPagination(w http.ResponseWriter, r *http.Request) {
+	pageString := r.URL.Query().Get("page")
+	if pageString == "" {
+		pageString = "1"
+	}
+	pageNumber, err := strconv.Atoi(pageString)
+	if err != nil || pageNumber < 1 {
+		http.Redirect(w, r, "/?page=1", http.StatusSeeOther)
+		return
+	}
+
+	page := "./ui/templates/pages/home.html"
+	data := app.newTemplateData(r)
+	listings, err := app.storage.Property.GetAllWithPagination(storage.Pagination{
+		Page:  pageNumber,
+		Limit: 3,
+	})
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data.Listings = listings
+	data.ListingsPagination = Pagination{
+		CurrentPage: pageNumber,
+		TotalPage:   3,
+	}
+	app.render(w, r, http.StatusOK, page, data)
+}
+
 func (app *application) handleHomePage(w http.ResponseWriter, r *http.Request) {
 	page := "./ui/templates/pages/home.html"
 	data := app.newTemplateData(r)

@@ -46,6 +46,19 @@
     </div>
   {{ end }}
   </div>
+  <br>
+  <div>
+    <a
+      href="/?page={{minus .ListingsPagination.CurrentPage 1}}"
+      role="button"
+      class="outline"
+      {{if lt .ListingsPagination.CurrentPage 2}}disabled{{end}}>Previous</a>
+    <a
+        href="/?page={{plus .ListingsPagination.CurrentPage 1}}"
+        role="button"
+        class="outline"
+        {{if lt .ListingsPagination.CurrentPage .ListingsPagination.TotalPage}}{{else}}disabled{{end}} >Next</a>
+  </div>
 </section>
 <!-- LISTINGS GRID -->
 
