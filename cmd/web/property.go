@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,6 +17,8 @@ import (
 	"github.com/KishorPokharel/casa/validator"
 	"github.com/julienschmidt/httprouter"
 )
+
+const pageSize = 6
 
 func (app *application) handleHomePageWithPagination(w http.ResponseWriter, r *http.Request) {
 	pageString := r.URL.Query().Get("page")
@@ -32,8 +35,13 @@ func (app *application) handleHomePageWithPagination(w http.ResponseWriter, r *h
 	data := app.newTemplateData(r)
 	listings, err := app.storage.Property.GetAllWithPagination(storage.Pagination{
 		Page:  pageNumber,
-		Limit: 3,
+		Limit: pageSize,
 	})
+	total, err := app.storage.Property.GetAvailableListingsCount()
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -41,7 +49,7 @@ func (app *application) handleHomePageWithPagination(w http.ResponseWriter, r *h
 	data.Listings = listings
 	data.ListingsPagination = Pagination{
 		CurrentPage: pageNumber,
-		TotalPage:   3,
+		TotalPage:   int(math.Ceil(float64(total / pageSize))),
 	}
 	app.render(w, r, http.StatusOK, page, data)
 }

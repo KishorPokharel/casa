@@ -50,6 +50,26 @@ type PropertyStorage struct {
 	DB *sql.DB
 }
 
+func (s *PropertyStorage) GetAvailableListingsCount() (int, error) {
+	query := `
+        select count(id)
+        from
+            listings
+        where listings.available = true
+    `
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var count int
+	row := s.DB.QueryRowContext(ctx, query)
+	err := row.Scan(&count)
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
 func (s *PropertyStorage) ExistsWithID(id int64) (bool, error) {
 	query := "select exists( select true from listings where id = $1 )"
 
