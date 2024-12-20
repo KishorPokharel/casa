@@ -1,6 +1,6 @@
 module github.com/KishorPokharel/casa
 
-go 1.22.1
+go 1.23.4
 
 require (
 	github.com/alexedwards/scs/postgresstore v0.0.0-20231113091146-cef4b05350c8
