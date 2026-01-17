@@ -34,6 +34,16 @@ tasks:
       - clear
       - task: run
 
+  check-deps:
+    desc: 'check for dependency updates'
+    cmds:
+      - go list -m -u all
+
+  update-deps:
+    desc: 'update all dependencies to their latest minor or patch versions'
+    cmds:
+      - go get -u ./...
+
   clean:
     desc: 'clean build folder'
     cmds:
