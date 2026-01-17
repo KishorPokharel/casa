@@ -39,10 +39,16 @@ tasks:
     cmds:
       - go list -m -u all
 
+  tidy:
+    desc: 'run go mod tidy'
+    cmds:
+      - go mod tidy
+
   update-deps:
     desc: 'update all dependencies to their latest minor or patch versions'
     cmds:
       - go get -u ./...
+      - task: tidy
 
   clean:
     desc: 'clean build folder'
