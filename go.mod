@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/alexedwards/scs/postgresstore v0.0.0-20251002162104-209de6e426de
 	github.com/alexedwards/scs/v2 v2.9.0
-	github.com/felixge/httpsnoop v1.0.4
+	github.com/felixge/httpsnoop v1.1.0
 	github.com/gabriel-vasile/mimetype v1.4.13
 	github.com/go-mail/mail/v2 v2.3.0
 	github.com/google/uuid v1.6.0
@@ -13,8 +13,8 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/justinas/alice v1.2.0
 	github.com/leekchan/accounting v1.0.0
-	github.com/lib/pq v1.11.2
-	golang.org/x/crypto v0.48.0
+	github.com/lib/pq v1.12.3
+	golang.org/x/crypto v0.54.0
 )
 
 require (
